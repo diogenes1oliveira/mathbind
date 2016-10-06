@@ -21,7 +21,7 @@ setup(
     description='',
     long_description=long_description,
 
-    url='https://github.com/pypa/sampleproject',
+    url='https://github.com/diogenes1oliveira/mathbind',
 
     author='Diógenes Oliveira',
     author_email='diogenes1oliveira@gmail.com',
