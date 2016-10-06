@@ -1,23 +1,13 @@
 #!/usr/bin/env python3
 
-"""
-Usage:
-    mathbind [--def-file=<JSON_FILE>] [--output=<FILE>]
-    mathbind -h | --help | --version
-
-Options:
-    -d --def-file=<JSON_FILE>     Index of the joystick to be used
-    -o --output=<FILE>            JSON file with the mappings to be used
-"""
-
 import sys
 import json
 import opster
 from mathbind.library import LibraryObject
 
 
-@opster.command()
-def main_command(output,
+@opster.command(usage='[-d FILE] [-o FILE]')
+def main_command(output=('o','','Output file, defaults to stdout'),
                  def_file=('d', '', 'JSON file with the definition of the library structure')):
     """
     A Python tool to auto-generate the boilerplate code to connect Mathematica to arbitrary external libraries.
