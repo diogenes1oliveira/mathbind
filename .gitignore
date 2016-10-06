@@ -89,8 +89,4 @@ ENV/
 .ropeproject
 
 # Pycharm
-<<<<<<< HEAD
 .idea/
-=======
-.idea/
->>>>>>> 8a2230fd452f40ddccb4bc28600f0fbc4750280b
