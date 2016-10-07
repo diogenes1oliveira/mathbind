@@ -76,7 +76,7 @@ class BasicType:
         - suffix (str): suffix to add after the variable, defaults to None
         '''
         return ''
-    
+
     def after_cstr(self, argname, tab='', suffix=None):
         """
         Code to add after calling the function, defaults to an empty string.

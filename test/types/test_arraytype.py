@@ -114,3 +114,8 @@ class TestArrayType(unittest.TestCase):
             ' MTensor mtensor_ironmanAnt = MArgument_getMTensor(ArgsAnt[2]);\n'
             ' mreal * data_ironmanAnt = libDataAnt->MTensor_getRealData(mtensor_ironmanAnt);\n')
         self.assertEqual(double_t.retrieve_cstr('ironman', 2, ' ', 'Ant'), s + before)
+
+    def test_const_array_before_mathstr(self):
+        double_t = ArrayType.from_str('double [3]')
+        s = ' varGen = Developer`ToPackedArray[Map[N, var]];\n'
+        self.assertEqual(double_t.before_mathstr('var', ' ', 'Gen'), s)

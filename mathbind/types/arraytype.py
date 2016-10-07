@@ -87,6 +87,19 @@ class ArrayType(BasicType):
         )
         return convert.format(argname=argname, self=self, tab=tab, suffix=suffix)
 
+    def before_mathstr(self, argname, tab='', suffix=None):
+        if suffix is None:
+            suffix = self.default_suffix
+
+        if 'float' in self.typename or 'double' in self.typename:
+            convert_f = 'N'
+        else:
+            convert_f = 'IntegerPart'
+
+        form = '{tab}{argname}{suffix} = Developer`ToPackedArray[Map[{convert_f}, {argname}]];\n'
+        return form.format(argname=argname, tab=tab,
+                           suffix=suffix, self=self, convert_f=convert_f)
+
     def after_cstr(self, argname, tab='', suffix=None):
         """
         Returns a C string with the instructions to convert the argname back to the
