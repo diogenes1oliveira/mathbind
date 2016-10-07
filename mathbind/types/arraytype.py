@@ -29,7 +29,7 @@ class ArrayType(BasicType):
         bracket1 = s.index('[')
         bracket2 = s.index(']')
         if bracket1 > bracket2 or s.count('[') != 1 or s.count(']') != 1:
-            raise ValueError
+            raise ValueError('Misplaced brackets')
 
         type_spec = s[:bracket1].strip()
         length_spec = s[bracket1 + 1: bracket2].strip()
@@ -60,10 +60,10 @@ class ArrayType(BasicType):
         try:
             bra1, bra2 = s.index('['), s.index(']')
         except (IndexError, ValueError):
-            raise ValueError('no brackets found')
+            raise ValueError('No brackets found')
 
         if bra1 > bra2:
-            raise ValueError('brackets out of order')
+            raise ValueError('Misplaced brackets')
 
         *words, argname = s[: bra1].split()
         return ArrayType.from_str(' '.join(words) + '[' + s[bra1 + 1:bra2] + ']'), argname

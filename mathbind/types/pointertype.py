@@ -23,7 +23,7 @@ class PointerType(BasicType):
         the type is value or array-like.
         """
         if s.count('*') != 1:
-            raise ValueError
+            raise ValueError('Not a valid pointer type')
 
         s = s.replace('*', '')
         before_const, _, after_const = s.partition('const')
@@ -36,7 +36,7 @@ class PointerType(BasicType):
     @classmethod
     def from_prototype_cstr(cls, s):
         if s.count('*') != 1:
-            raise ValueError('only single pointers are supported currently.')
+            raise ValueError('Only single pointers are supported currently.')
 
         try:
             i = s.index('*')
@@ -46,7 +46,7 @@ class PointerType(BasicType):
         words, _, argname = s.partition('*')
 
         if not words or not argname:
-            raise ValueError('invalid pointer argument')
+            raise ValueError('Not a valid pointer type')
 
         return PointerType.from_str(words + ' * '), argname.strip()
 

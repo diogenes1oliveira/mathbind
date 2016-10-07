@@ -33,7 +33,7 @@ class BasicValueType(BasicType):
             self.c_math_name = 'mint'
             self.math_name = 'Integer'
         else:
-            raise ValueError
+            raise ValueError('Unrecognized C type')
 
     @classmethod
     def from_str(cls, s):
@@ -42,7 +42,7 @@ class BasicValueType(BasicType):
         the type is a pointer or array-like.
         """
         if '*' in s or '[' in s or ']' in s:
-            raise ValueError
+            raise ValueError('Not a valid basic C type')
 
         while '  ' in s:
             s = s.replace('  ', ' ')
@@ -59,7 +59,7 @@ class BasicValueType(BasicType):
         s = s.strip()
 
         if not s.replace(' ', '').replace('_', '').isalnum():
-            raise ValueError
+            raise ValueError('Unrecognized characters')
 
         *words, argname = s.split()
         return BasicValueType.from_str(' '.join(words)), argname.strip()
