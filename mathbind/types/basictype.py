@@ -65,6 +65,18 @@ class BasicType:
         """
         return ''
 
+    def before_mathstr(self, argname, tab='', suffix=None):
+        '''
+        Returns a Mathematica string with the instructions to convert the
+        Mathematica object before passing it to the C generated function, defaults
+        to "".
+        Args:
+        - argname (str): name of the argument to retrieve
+        - tab (str): string to add at the beginning of each line.
+        - suffix (str): suffix to add after the variable, defaults to None
+        '''
+        return ''
+    
     def after_cstr(self, argname, tab='', suffix=None):
         """
         Code to add after calling the function, defaults to an empty string.
