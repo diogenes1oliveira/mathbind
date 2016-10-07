@@ -10,11 +10,13 @@ class BasicType:
     Class properties:
     - default_suffix (str): string to add to each generated identifier, used
     to avoid clashes.
+    - default_value  (str): default value of the type, defaults to '0'
 
     Instance properties
     - typename (str): real typename, as declared
     """
     default_suffix = 'Gen'
+    default_value = '0'
 
     @classmethod
     def from_str(cls, s):
@@ -51,6 +53,17 @@ class BasicType:
         function call, defaults to the own argname (pass by value).
         """
         return argname
+
+    def before_cstr(self, argname, tab='', suffix=None):
+        """
+        Returns a C string with the instructions to convert the argname from the
+        Mathematica required format, defaults to ""
+        Args:
+        - argname (str): name of the argument to retrieve
+        - tab (str): string to add at the beginning of each line.
+        - suffix (str): suffix to add after the variable, defaults to None
+        """
+        return ''
 
     def after_cstr(self, argname, tab='', suffix=None):
         """
