@@ -21,6 +21,15 @@ class TestArrayType(unittest.TestCase):
         with self.assertRaises(ValueError): ArrayType.from_str('[ ] int')
         with self.assertRaises(ValueError): ArrayType.from_str('floating []')
 
+    def test_from_str_const(self):
+        self.assertEqual(ArrayType.from_str(' const float []').const, True)
+        self.assertEqual(ArrayType.from_str(' const double [3]').const, True)
+        self.assertEqual(ArrayType.from_str('const   long long int [length]').const, True)
+
+        self.assertEqual(ArrayType.from_str(' const float []').basetype, BasicValueType.from_str('float'))
+        self.assertEqual(ArrayType.from_str(' const double [3]').basetype, BasicValueType.from_str('double'))
+        self.assertEqual(ArrayType.from_str('const   long long int [length]').basetype, BasicValueType.from_str('long long int'))
+
     def test_from_prototype_cstr(self):
         ArrayType.from_prototype_cstr('int num[]')
         ArrayType.from_prototype_cstr('float _3[30]')

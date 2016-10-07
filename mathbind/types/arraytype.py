@@ -10,13 +10,15 @@ class ArrayType(BasicType):
     - basetype (BasicValueType): base type of the pointer.
     - policy (str): size policy of the array. Can be 'fixed', 'infinite', 'variable' (tied to another variable).
     - size (str or int):
+    - const (bool): can the parameter be changed?
     """
 
-    def __init__(self, basetype, policy, size=None):
+    def __init__(self, basetype, policy, size=None, const=False):
         self.basetype = basetype
         self.typename = basetype.typename + ' [{}]'.format('' if size is None else size)
         self.policy = policy
         self.size = size
+        self.const = const
 
     @classmethod
     def from_str(cls, s):
@@ -43,7 +45,12 @@ class ArrayType(BasicType):
                 policy = 'variable'
                 size = length_spec
 
-        return ArrayType(BasicValueType.from_str(type_spec), policy, size)
+        const = False
+        if 'const' in type_spec.split():
+            type_spec = ' '.join(type_spec.split()[1:])
+            const = True
+
+        return ArrayType(BasicValueType.from_str(type_spec), policy, size, const)
 
     @classmethod
     def from_prototype_cstr(cls, s):
@@ -63,11 +70,11 @@ class ArrayType(BasicType):
 
     def __eq__(self, other):
         return (self.basetype == other.basetype and self.policy == other.policy
-                and self.size == other.size)
+                and self.size == other.size and self.const == other.const)
 
     def __repr__(self):
-        return ('ArrayType(basetype=%r, policy=%r, size=%r)'
-                % (self.basetype, self.policy, self.size))
+        return ('ArrayType(basetype=%r, policy=%r, size=%r, const=%r)'
+                % (self.basetype, self.policy, self.size, self.const))
 
     def before_cstr(self, argname, tab='', suffix=None):
         """
