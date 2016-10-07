@@ -43,6 +43,10 @@ class TestArrayType(unittest.TestCase):
         self.assertEqual(ArrayType.from_prototype_cstr(' int counter [3] '),
                          (ArrayType.from_str('int [3]'), 'counter'))
 
+        self.assertEqual(ArrayType.from_prototype_cstr(' const int counter [3] '),
+                         (ArrayType(BasicValueType.from_str('int'), 'fixed', 3, True), 'counter'))
+
+
     def test_basic_type(self):
         self.assertEqual(ArrayType.from_str('int [ ]').basetype, BasicValueType.from_str('int'))
         self.assertEqual(ArrayType.from_str('double [3]').basetype, BasicValueType.from_str('double'))
@@ -125,6 +129,15 @@ class TestArrayType(unittest.TestCase):
         self.assertEqual(double_t.retrieve_cstr('ironman', 2, ' ', 'Ant'), s + before)
 
     def test_const_array_before_mathstr(self):
-        double_t = ArrayType.from_str('double [3]')
-        s = ' varGen = Developer`ToPackedArray[Map[N, var]];\n'
+        double_t = ArrayType.from_str('const double [3]')
+        s = (
+            ' If[Length[var] == 0, var = ConstantArray[0, 3]];\n'
+            ' varGen = Developer`ToPackedArray[Map[N, var]];\n'
+        )
         self.assertEqual(double_t.before_mathstr('var', ' ', 'Gen'), s)
+
+        int_t = ArrayType.from_str('int [length]')
+        s = (
+            '   fooGeni = Developer`ToPackedArray[Map[IntegerPart, foo]];\n'
+        )
+        self.assertEqual(int_t.before_mathstr('foo', '   ', 'Geni'), s)
