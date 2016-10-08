@@ -31,3 +31,7 @@ class TestVoidType(unittest.TestCase):
         func_call = 'f(&a, b, c)'
         r = VoidType.from_str('void').return_cstr(func_call, ' ', '')
         self.assertEqual(r, ' f(&a, b, c);\n')
+
+    def test_math_name(self):
+        self.assertEqual(VoidType.from_str('  void ').math_name, '"Void"')
+        self.assertEqual(VoidType('void').math_name, '"Void"')
