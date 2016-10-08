@@ -4,13 +4,13 @@ import os
 from mathbind.compilers.compiler import Compiler
 
 
-class GFortranCompiler(Compiler):
+class GccCompiler(Compiler):
     """
     Crude interface to the gfortran compiler
     """
-    name = 'gfortran'
+    name = 'gcc'
 
-    def __init__(self, flags='', include_paths=None, libs=None, lib_paths=None, command='gfortran'):
+    def __init__(self, flags='', include_paths=None, libs=None, lib_paths=None, command='gcc'):
         self.command = command
         self.flags = flags
         self.include_paths = include_paths or []
