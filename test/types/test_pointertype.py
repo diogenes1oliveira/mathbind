@@ -51,6 +51,8 @@ class TestPointerType(unittest.TestCase):
         self.assertEqual(PointerType.from_str('const int *').const, True)
         self.assertEqual(PointerType.from_str('int *').const, False)
 
+        self.assertEqual(PointerType.from_str(' const   int *').const, True)
+
     def test_retrieve_cstr(self):
         double_t = PointerType.from_str('const double *')
         self.assertEqual(double_t.retrieve_cstr('num', 0, suffix=''), 'double num = MArgument_getReal(Args[0]);\n')
