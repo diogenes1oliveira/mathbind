@@ -107,9 +107,16 @@ class ArrayType(BasicType):
         else:
             convert_f = 'IntegerPart'
 
-        form = '{tab}{argname}{suffix} = Developer`ToPackedArray[Map[{convert_f}, {argname}]];\n'
         if self.const:
-            form = '{tab}If[Length[{argname}] == 0, {argname} = ConstantArray[0, {self.size}]];\n' + form
+            form = (
+                '{tab}{argname}{suffix} = If[Length[{argname}] == 0, ConstantArray[0, {self.size}], {argname}];\n'
+                '{tab}{argname}{suffix} = Developer`ToPackedArray[Map[{convert_f}, {argname}{suffix}]];\n'
+            )
+        else:
+            form = (
+                '{tab}{argname}{suffix} = {argname};\n'
+                '{tab}{argname}{suffix} = Developer`ToPackedArray[Map[{convert_f}, {argname}{suffix}]];\n'
+            )
 
         return form.format(argname=argname, tab=tab,
                            suffix=suffix, self=self, convert_f=convert_f)

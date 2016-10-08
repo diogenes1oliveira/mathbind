@@ -55,7 +55,7 @@ class PointerType(BasicType):
     @property
     def should_return(self):
         return not self.const
-    
+
     def __eq__(self, other):
         return self.basetype == other.basetype and self.const == other.const
 

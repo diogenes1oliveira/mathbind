@@ -141,13 +141,14 @@ class TestArrayType(unittest.TestCase):
     def test_const_array_before_mathstr(self):
         double_t = ArrayType.from_str('const double [3]')
         s = (
-            ' If[Length[var] == 0, var = ConstantArray[0, 3]];\n'
-            ' varGen = Developer`ToPackedArray[Map[N, var]];\n'
+            ' varGen = If[Length[var] == 0, ConstantArray[0, 3], var];\n'
+            ' varGen = Developer`ToPackedArray[Map[N, varGen]];\n'
         )
         self.assertEqual(double_t.before_mathstr('var', ' ', 'Gen'), s)
 
         int_t = ArrayType.from_str('int [length]')
         s = (
-            '   fooGeni = Developer`ToPackedArray[Map[IntegerPart, foo]];\n'
+            '   fooGeni = foo;\n'
+            '   fooGeni = Developer`ToPackedArray[Map[IntegerPart, fooGeni]];\n'
         )
         self.assertEqual(int_t.before_mathstr('foo', '   ', 'Geni'), s)
