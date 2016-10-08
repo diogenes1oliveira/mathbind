@@ -4,6 +4,7 @@ import sys
 import json
 import opster
 from path import Path
+import mathbind
 from mathbind.library import LibraryObject
 
 
