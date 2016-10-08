@@ -250,3 +250,29 @@ class LibraryObject:
             func.math_str(libname, '    ', 'Gen') for func in self.functions
         )
         return code
+
+    def generate_c_library(self, c_output, math_exec='math', flags=''):
+        """
+        Generates the C bindings
+        """
+        with open(c_output, 'w') as fp:
+            fp.write(self.to_cstr())
+
+    def build_c_library(self, c_output, math_exec='math', flags=''):
+        with open(c_output, 'w') as fp:
+            fp.write(self.to_cstr())
+
+        libraries = '{' + ', '.join('"{}"'.format(lib) for lib in self.libraries) + '}'
+        lib_paths = '{' + ', '.join('"{}"'.format(lib) for lib in self.lib_paths) + '}'
+        flags = self.flags.replace('"', '\\"')
+        name = self.name
+
+        math_code = (
+            'Needs["CCompilerDriver`"];\n' +
+            'cfile="{c_output}";\n' +
+            'CreateLibrary[{{cfile}}, "{name}", "Libraries" -> {libraries}, "LibraryDirectories" -> {lib_paths}' +
+                ' "CompileOptions" -> "{flags}"] // Print'
+        ).format(**locals())
+
+        with open(self.path.joinpath('compiler.m'), 'w') as fp:
+            print(math_code, file=fp)

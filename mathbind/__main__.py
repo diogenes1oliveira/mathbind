@@ -3,6 +3,7 @@
 import sys
 import json
 import opster
+from path import Path
 from mathbind.library import LibraryObject
 
 
@@ -21,6 +22,19 @@ def generate_c(output=('o','','Output file, defaults to stdout'),
     fp_out.write(lib.to_cstr())
     fp_out.close()
     fp_in.close()
+
+@opster.command(usage='[-m MATH_EXECUTABLE] [-f FLAGS] def_file -o lib_file')
+def build_c(def_file,
+            lib_file,
+            math_exec=('m', 'math -script ', 'Mathematica script runner'),
+            flags=('f', '', 'Compiler flags')):
+    """
+    Generates and builds the boilerplate code to connect Mathematica to arbitrary external libraries.
+    """
+    lib = LibraryObject.from_file(def_file, flags)
+
+    lib.build_c_library(lib.path.joinpath(lib_file), math_exec)
+
 
 @opster.command(usage='[-d FILE] [-o FILE]')
 def generate_math(libname,
