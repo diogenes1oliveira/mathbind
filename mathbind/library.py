@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-import mathbind
+import json
+from path import Path
 from mathbind.types import BasicType
 
 
@@ -176,13 +177,52 @@ class FunctionObject:
 
         return math_load + func_code
 
+
 class LibraryObject:
     """
     Represents a whole library.
     """
     def __init__(self, info):
         self.name = info['name']
+        self.path = info.get('path', '')
+        if not self.path:
+            self.path = Path('.').abspath()
+
+        self.flags = info.get('flags', '')
         self.functions = [FunctionObject.from_obj(f) for f in info['functions']]
+        self.libraries = info.get('libraries', [])
+        self.lib_paths = info.get('lib_paths', [])
+
+    def __eq__(self, other):
+        return (self.name == other.name and
+                self.path == other.path and
+                self.flags == other.flags and
+                self.functions == other.functions)
+
+    def __repr__(self):
+        return 'LibraryObject(%r)' % {
+            'name': self.name,
+            'path': self.path,
+            'flags': self.flags,
+            'functions': self.functions
+        }
+
+    @classmethod
+    def from_file(cls, file, flags=''):
+        """
+        Returns a LibraryObject based on the given filename
+        """
+        path = Path(file).abspath().parent
+        with open(file) as fp:
+            d = json.load(fp)
+        d.setdefault('path', path)
+
+        basename = Path(file).basename().replace('.json', '')
+        d.setdefault('name', basename)
+        d.setdefault('flags', '')
+        if flags:
+            d['flags'] += ' ' + flags
+        return LibraryObject(d)
 
     def to_cstr(self):
         """

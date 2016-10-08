@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+import tempfile
 import unittest
+from path import Path
 from mathbind.types import BasicValueType, VoidType, PointerType, ArrayType
 from mathbind.library import FunctionObject, LibraryObject
 
@@ -141,6 +143,35 @@ class TestLibraryObject(unittest.TestCase):
             "name": "mylib",
             "functions": [f1]
         })
+
+        self.temp1 = Path(tempfile.mkdtemp())
+        self.file2 = self.temp1.joinpath('def2.json')
+        int_t = BasicValueType.from_str('int')
+        f2 = FunctionObject('foo', int_t, ['bar'], [double_t])
+        self.lib2 = LibraryObject({
+            'name': 'def2',
+            'path': self.temp1,
+            'flags': '',
+            'functions': [f2]
+
+        })
+        with open(self.file2, 'w') as fp:
+            fp.write('''
+            {
+                "functions": [
+                    "int foo(double bar);"
+                ]
+            }
+            ''')
+
+    def tearDown(self):
+        self.temp1.rmtree()
+
+    def test_properties(self):
+        lib2 = LibraryObject.from_file(self.file2)
+        self.assertEqual(lib2, self.lib2)
+
+
 
     def test_to_mathstr(self):
         s1 = 'Needs["Developer`"];\n'
