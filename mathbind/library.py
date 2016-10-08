@@ -282,10 +282,10 @@ class LibraryObject:
             'Export["{lib_name_file}", libname, "Text"];'
         ).format(**locals())
 
-        with open(self.path.joinpath('compiler.m'), 'w') as fp:
+        with open(self.path.joinpath(self.name+'.compiler.m'), 'w') as fp:
             print(math_code, file=fp)
 
-        command = math_exec + str(self.path.joinpath('compiler.m'))
+        command = math_exec + str(self.path.joinpath(self.name+'.compiler.m'))
         os.system(command)
 
         with open(lib_name_file) as fp:
