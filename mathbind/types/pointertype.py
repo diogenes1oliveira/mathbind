@@ -27,7 +27,7 @@ class PointerType(BasicType):
 
         s = s.replace('*', '')
         before_const, _, after_const = s.partition('const')
-        print(s, (before_const, after_const))
+        
         if not after_const:
             return PointerType(BasicValueType.from_str(before_const), False)
 
@@ -62,11 +62,12 @@ class PointerType(BasicType):
         if self.const:
             form = '{tab}{self.basetype.c_name} {argname} = MArgument_get{self.basetype.math_name}(Args{suffix}[{index}]);\n'
         else:
-            print(self)
-            form = ('{tab}MTensor mtensor_{argname}{suffix} = MArgument_getMTppensor(Args{suffix}[{index}]);\n'
+            form = ('{tab}MTensor mtensor_{argname}{suffix} = MArgument_getMTensor(Args{suffix}[{index}]);\n'
                     '{tab}{self.basetype.c_name} {argname} = * (libData{suffix}->MTensor_get{self.basetype.math_name}Data(mtensor_{argname}{suffix}));\n')
 
-        return form.format(argname=argname, self=self, tab=tab, index=index, suffix=suffix)
+        cstr = form.format(argname=argname, self=self, tab=tab, index=index, suffix=suffix)
+
+        return cstr
 
     def pass_cstr(self, argname, suffix=''):
         return '&' + argname + suffix
