@@ -55,6 +55,8 @@ class TestBasicValueType(unittest.TestCase):
                          BasicValueType.from_str(' long  int   '))
         self.assertEqual(BasicValueType.from_str('long int'),
                          BasicValueType.from_str(' long   int   '))
+        self.assertEqual(BasicValueType.from_str('long int'),
+                         BasicValueType.from_str(' long    int   '))
 
     def test_from_prototype_cstr(self):
         BasicValueType.from_prototype_cstr('bool flag')
