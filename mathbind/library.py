@@ -26,6 +26,9 @@ class FunctionObject:
         r = 'FunctionObject(func_name={self.func_name}, return_type={self.return_type}, argnames={self.argnames}, args={self.args}'
         return r.format(self=self)
 
+    def copy(self):
+        return FunctionObject(self.func_name, self.return_type, self.argnames, self.args)
+
     def func_str(self, tab='', suffix=None):
         """
         Returns the C code for Mathematica to interact with the function.
@@ -111,6 +114,9 @@ class FunctionObject:
         Tries to call FunctionObject.from_dict() and if it raises an error
         calls FunctionObject.from_str().
         """
+        if isinstance(obj, FunctionObject):
+            return obj.copy()
+
         try:
             return FunctionObject.from_dict(obj)
         except (KeyError, TypeError):
@@ -180,9 +186,7 @@ class LibraryObject:
 
     def to_cstr(self):
         """
-        Returns the complete code for interfacing with the library.
-
-        :return: str
+        Returns the complete C code for interfacing with the library.
         """
         code = (
             '#include <stdlib.h>\n'
@@ -196,4 +200,13 @@ class LibraryObject:
             code += func.prototype_cstr()
             code += func.func_str('    ', 'Gen')
 
+        return code
+
+    def to_mathstr(self, libname):
+        """
+        Returns the complete Mathematica code for interfacing with the library.
+        """
+        code = 'Needs["Developer`"];\n' + ''.join(
+            func.math_str(libname, '    ', 'Gen') for func in self.functions
+        )
         return code

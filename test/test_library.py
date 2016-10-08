@@ -2,7 +2,7 @@
 
 import unittest
 from mathbind.types import BasicValueType, VoidType, PointerType, ArrayType
-from mathbind.library import FunctionObject
+from mathbind.library import FunctionObject, LibraryObject
 
 
 class TestFunctionObject(unittest.TestCase):
@@ -120,3 +120,20 @@ class TestFunctionObject(unittest.TestCase):
         )
         self.assertEqual(f5.math_str('trololo', '\t', 'Gen'), s5)
 
+
+class TestLibraryObject(unittest.TestCase):
+    def setUp(self):
+        double_t = BasicValueType.from_str('double')
+        void_t = VoidType.from_str('void')
+        f1 = FunctionObject('myfunc', void_t, ['arg1'], [double_t])
+        self.lib1 = LibraryObject({
+            "name": "mylib",
+            "functions": [f1]
+        })
+
+    def test_to_mathstr(self):
+        s1 = 'Needs["Developer`"];\n'
+        f1 = FunctionObject.from_str('void myfunc(double arg1);')
+
+        self.assertEqual(self.lib1.to_mathstr("mylibdll"),
+                         s1 + f1.math_str('mylibdll', '    ', 'Gen'))
