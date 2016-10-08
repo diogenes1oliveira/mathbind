@@ -13,6 +13,8 @@ class PointerType(BasicType):
 
     def __init__(self, basetype, const=False):
         self.typename = basetype.typename + ' * '
+        if const:
+            self.typename = 'const ' + self.typename
         self.basetype = basetype
         self.const = const
 
@@ -27,7 +29,7 @@ class PointerType(BasicType):
 
         s = s.replace('*', '')
         before_const, _, after_const = s.partition('const')
-        
+
         if not after_const:
             return PointerType(BasicValueType.from_str(before_const), False)
 

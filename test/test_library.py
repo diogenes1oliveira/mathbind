@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import unittest
-from mathbind.types import BasicValueType, VoidType
+from mathbind.types import BasicValueType, VoidType, PointerType
 from mathbind.library import FunctionObject
 
 
@@ -37,3 +37,12 @@ class TestFunctionObject(unittest.TestCase):
 
         func = FunctionObject(name, return_type, [arg1name], [arg1])
         self.assertEqual(FunctionObject.from_str('int spiderman(double web);'), func)
+
+        name = 'myfunc'
+        return_type = VoidType.from_str('void')
+        arg1name = 'web'
+        arg1 = PointerType.from_str('const double *')
+
+        func = FunctionObject(name, return_type, [arg1name], [arg1])
+        func2 = FunctionObject.from_str('void myfunc(const double * web);')
+        self.assertEqual(func2, func)

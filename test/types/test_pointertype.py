@@ -25,10 +25,27 @@ class TestPointerType(unittest.TestCase):
         with self.assertRaises(ValueError): PointerType.from_prototype_cstr('bool flag []')
         with self.assertRaises(ValueError): PointerType.from_prototype_cstr('int flag ')
 
+        int_t = BasicValueType.from_str('int')
         self.assertEqual(PointerType.from_prototype_cstr(' int * counter '),
-                         (PointerType.from_str('int *'), 'counter'))
-        self.assertEqual(PointerType.from_prototype_cstr(' const int * counter '),
-                         (PointerType.from_str('const int *'), 'counter'))
+                         (PointerType(int_t, False), 'counter'))
+        self.assertEqual(PointerType.from_prototype_cstr(' const int * trololo '),
+                         (PointerType(int_t, True), 'trololo'))
+        self.assertEqual((PointerType(int_t, True), 'value'),
+                         PointerType.from_prototype_cstr('  const   int * value'))
+
+        double_t = BasicValueType.from_str('double')
+        self.assertEqual((PointerType(double_t, True), 'value'),
+                         PointerType.from_prototype_cstr('const double * value'))
+
+    def test_typename(self):
+        int_t = BasicValueType.from_str('int')
+        double_t = BasicValueType.from_str('double')
+
+        self.assertEqual(PointerType(int_t, True).typename, 'const int * ')
+        self.assertEqual(PointerType(int_t, False).typename, 'int * ')
+
+        self.assertEqual(PointerType(double_t, True).typename, 'const double * ')
+        self.assertEqual(PointerType(double_t, False).typename, 'double * ')
 
     def test_const(self):
         self.assertEqual(PointerType.from_str('const int *').const, True)

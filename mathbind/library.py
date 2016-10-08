@@ -100,8 +100,8 @@ class FunctionObject:
         d = {}
         d['name'] = func_name
         d['return'] = ' '.join(type_words)
-        args = [BasicType.from_prototype_cstr(arg) for arg in args]
-        d['args'] = [{'name': arg[1], 'type': arg[0].typename} for arg in args]
+        args_types = [BasicType.from_prototype_cstr(arg) for arg in args]
+        d['args'] = [{'name': arg[1], 'type': arg[0].typename} for arg in args_types]
 
         return FunctionObject.from_dict(d)
 
