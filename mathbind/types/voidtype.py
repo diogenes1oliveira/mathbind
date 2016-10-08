@@ -21,7 +21,7 @@ class VoidType(BasicType):
     @property
     def math_name(self):
         return '"Void"'
-    
+
     @classmethod
     def from_str(self, s):
         """

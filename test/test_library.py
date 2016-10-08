@@ -47,8 +47,19 @@ class TestFunctionObject(unittest.TestCase):
         func2 = FunctionObject.from_str('void myfunc(const double * web);')
         self.assertEqual(func2, func)
 
-    @unittest.skip
     def test_math_load(self):
         f1 = FunctionObject.from_str('int myfunc(double arg);')
-        s = 'myFuncSuf = LibraryFunctionLoad["trololo", "math_myfuncSuf", {Real}, Integer]'
-        self.assertEqual(f1.mathload('trololo', 'Suf'), s)
+        s1 = 'myfuncSuf = LibraryFunctionLoad["trololo", "math_myfuncSuf", {Real}, Integer];\n'
+        self.assertEqual(f1.math_load('trololo', 'Suf'), s1)
+
+        f2 = FunctionObject.from_str('void spiderman(int arg);')
+        s2 = 'spidermanGeni = LibraryFunctionLoad["trololo", "math_spidermanGeni", {Integer}, "Void"];\n'
+        self.assertEqual(f2.math_load('trololo', 'Geni'), s2)
+
+        f3 = FunctionObject.from_str('double func1(const int * var);')
+        s3 = 'func1Foo = LibraryFunctionLoad["trololo", "math_func1Foo", {Integer}, Real];\n'
+        self.assertEqual(f3.math_load('trololo', 'Foo'), s3)
+
+        f4 = FunctionObject.from_str('double func1(float * var);')
+        s4 = 'func1Foo = LibraryFunctionLoad["trololo", "math_func1Foo", {{Real, 1, "Shared"}}, Real];\n'
+        self.assertEqual(f4.math_load('trololo', 'Foo'), s4)

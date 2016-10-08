@@ -132,7 +132,13 @@ class FunctionObject:
         """
         Returns a Mathematica string to load the function from the library.
         """
-
+        arg_code = ', '.join(arg.math_name for arg in self.args)
+        ret_code = self.return_type.math_name
+        func_name = self.func_name
+        if suffix is None:
+            suffix = BasicType.default_suffix
+        form = '{func_name}{suffix} = LibraryFunctionLoad["{libname}", "math_{func_name}{suffix}", {{{arg_code}}}, {ret_code}];\n'
+        return form.format(**locals())
 
 
 class LibraryObject:
