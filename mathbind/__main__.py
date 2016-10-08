@@ -23,7 +23,7 @@ def generate_c(output=('o','','Output file, defaults to stdout'),
     fp_out.close()
     fp_in.close()
 
-@opster.command(usage='[-m MATH_EXECUTABLE] [-f FLAGS] def_file -o lib_file')
+@opster.command(usage='[-m MATH_EXECUTABLE] [-f FLAGS] def_file lib_file')
 def build_c(def_file,
             lib_file,
             math_exec=('m', 'math -script ', 'Mathematica script runner'),

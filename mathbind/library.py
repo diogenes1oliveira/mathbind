@@ -2,6 +2,7 @@
 
 import json
 from path import Path
+import os
 from mathbind.types import BasicType
 
 
@@ -251,7 +252,7 @@ class LibraryObject:
         )
         return code
 
-    def generate_c_library(self, c_output, math_exec='math', flags=''):
+    def generate_c_library(self, c_output, math_exec='math -script ', flags=''):
         """
         Generates the C bindings
         """
@@ -266,13 +267,24 @@ class LibraryObject:
         lib_paths = '{' + ', '.join('"{}"'.format(lib) for lib in self.lib_paths) + '}'
         flags = self.flags.replace('"', '\\"')
         name = self.name
+        lib_name_file = self.path.joinpath(self.name + '.libname.txt')
 
         math_code = (
             'Needs["CCompilerDriver`"];\n' +
             'cfile="{c_output}";\n' +
-            'CreateLibrary[{{cfile}}, "{name}", "Libraries" -> {libraries}, "LibraryDirectories" -> {lib_paths}' +
-                ' "CompileOptions" -> "{flags}"] // Print'
+            'libname=CreateLibrary[{{cfile}}, "{name}", "Libraries" -> {libraries}, "LibraryDirectories" -> {lib_paths},' +
+                ' "CompileOptions" -> "{flags}"];\n' +
+            'Export["{lib_name_file}", libname, "Text"];'
         ).format(**locals())
 
         with open(self.path.joinpath('compiler.m'), 'w') as fp:
             print(math_code, file=fp)
+
+        command = math_exec + str(self.path.joinpath('compiler.m'))
+        os.system(command)
+
+        with open(lib_name_file) as fp:
+            libname = fp.read().strip()
+
+        with open(str(self.path.joinpath(self.name + '.m')), 'w') as fp:
+            fp.write(self.to_mathstr(libname))
