@@ -275,7 +275,7 @@ class LibraryObject:
         gen_path = str(self.path.joinpath(self.name + 'Gen.c'))
 
         with open(str(self.path.joinpath(gen_path)), 'w') as fp:
-            fp.write(self.to_cstr(libname))
+            fp.write(self.to_cstr())
 
         compiler_type = Compiler.by_name(compiler)
         comp = compiler_type(flags=self.flags,
@@ -283,8 +283,8 @@ class LibraryObject:
                              libs=self.libraries,
                              lib_paths=self.lib_paths
                              )
-
-        comp.compile_shared_library(self.files + [gen_path], libname)
+        files = [str(self.path.joinpath(file)) for file in self.files]
+        comp.compile_shared_library(files + [gen_path], libname)
 
         with open(str(self.path.joinpath(self.name + '.m')), 'w') as fp:
             fp.write(self.to_mathstr(libname))

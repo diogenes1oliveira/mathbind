@@ -24,16 +24,21 @@ def generate_c(output=('o','','Output file, defaults to stdout'),
     fp_out.close()
     fp_in.close()
 
-@opster.command(usage='[-m MATH_EXECUTABLE] [-f FLAGS] def_file')
+@opster.command(usage='[-m MATH_EXECUTABLE] [-f FLAGS] def_file [-L PATH1;PATH2] [-l lib1;lib2] [-I inc1;inc2]')
 def build_c(def_file,
-            math_exec=('m', 'math -script ', 'Mathematica script runner'),
-            flags=('f', '', 'Compiler flags')):
+            flags=('f', '', 'Compiler flags'),
+            lib_paths=('L', '', 'Library paths'),
+            libraries=('l', '', 'Libraries to link'),
+            include_paths=('I', '', 'Include paths')):
     """
     Generates and builds the boilerplate code to connect Mathematica to arbitrary external libraries.
     """
-    lib = LibraryObject.from_file(def_file, flags)
+    lib_paths = lib_paths.split(';') if lib_paths else ''
+    libraries = libraries.split(';') if libraries else ''
+    include_paths = include_paths.split(';') if include_paths else ''
+    lib = LibraryObject.from_file(def_file, include_paths, libraries, lib_paths, flags)
 
-    lib.build_c_library(lib.path.joinpath(lib.name + '.c'), math_exec)
+    lib.build_c_library('lib{name}.so')
 
 
 @opster.command(usage='[-d FILE] [-o FILE]')
