@@ -31,7 +31,7 @@ def iterate_folder(filename, pattern, excluding=None):
     """
     path = Path(filename)
     if not path.isdir():
-        path = filename.parent
+        path = path.parent
 
     for f in Path(path).glob('*.py'):
         sentinel = False
