@@ -13,7 +13,7 @@ class Compiler:
         Finds the compiler class by name.
         """
         for t in iterate_subtypes(cls):
-            if t.name == 'name':
+            if t.name == name:
                 return t
         else:
             raise ValueError("Compiler %r not found" % name)
