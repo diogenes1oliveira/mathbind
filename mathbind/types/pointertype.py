@@ -52,6 +52,10 @@ class PointerType(BasicType):
 
         return PointerType.from_str(words + ' * '), argname.strip()
 
+    @property
+    def should_return(self):
+        return not self.const
+    
     def __eq__(self, other):
         return self.basetype == other.basetype and self.const == other.const
 

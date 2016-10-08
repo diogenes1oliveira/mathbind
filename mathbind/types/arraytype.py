@@ -20,6 +20,10 @@ class ArrayType(BasicType):
         self.size = size
         self.const = const
 
+    @property
+    def should_return(self):
+        return not self.const
+
     @classmethod
     def from_str(cls, s):
         """

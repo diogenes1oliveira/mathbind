@@ -11,12 +11,18 @@ class BasicType:
     - default_suffix (str): string to add to each generated identifier, used
     to avoid clashes.
     - default_value  (str): default value of the type, defaults to '0'
-    - should_return  (bool): True if the value after the function should be returned.
     Instance properties
     - typename (str): real typename, as declared
     """
     default_suffix = 'Gen'
     default_value = '0'
+
+    @property
+    def should_return(self):
+        """
+        True if the value should be returned after the function.
+        """
+        return False
 
     @classmethod
     def from_str(cls, s):

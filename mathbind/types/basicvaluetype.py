@@ -35,10 +35,6 @@ class BasicValueType(BasicType):
         else:
             raise ValueError('Unrecognized C type')
 
-    @property
-    def should_return(self):
-        return False
-
     @classmethod
     def from_str(cls, s):
         """

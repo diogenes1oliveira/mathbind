@@ -58,6 +58,16 @@ class TestArrayType(unittest.TestCase):
         self.assertEqual(ArrayType.from_str('float [length]').policy, 'variable')
         self.assertEqual(ArrayType.from_str('long long [length]').policy, 'variable')
 
+    def test_should_return(self):
+        self.assertEqual(ArrayType.from_str('const double []').should_return,
+                         False)
+        self.assertEqual(ArrayType.from_str('int [3]').should_return,
+                         True)
+        self.assertEqual(ArrayType.from_str('  long long [length]').should_return,
+                         True)
+        self.assertEqual(ArrayType.from_str('const float [4]').should_return,
+                         False)
+
     def test_before_cstr(self):
         int_t = ArrayType.from_str('int [3]')
         s = (
