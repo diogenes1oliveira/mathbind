@@ -140,6 +140,35 @@ class FunctionObject:
         form = '{func_name}{suffix} = LibraryFunctionLoad["{libname}", "math_{func_name}{suffix}", {{{arg_code}}}, {ret_code}];\n'
         return form.format(**locals())
 
+    def math_str(self, libname, tab='', suffix=None):
+        """
+        Return the full Mathematica code to link the function from the library.
+        """
+        if suffix is None:
+            suffix = BasicType.default_suffix
+        math_load = self.math_load(libname, suffix)
+        arg_code = ''.join(arg.before_mathstr(argname, tab, suffix)
+                           for arg, argname in zip(self.args, self.argnames))
+
+        args_prototype = ', '.join(argname + '_' for argname in self.argnames)
+        mod_var_names = ', '.join(['return' + suffix] +
+                              [argname + suffix for argname in self.argnames])
+        return_var_names = ', '.join(['return' + suffix] +
+                              [argname + suffix
+                               for argname, arg in zip(self.argnames, self.args)
+                               if arg.should_return])
+        arg_names = ', '.join(argname + suffix for argname in self.argnames)
+        func_name = self.func_name
+
+        func_code = (
+            '{func_name}[{args_prototype}] := Module[{{{mod_var_names}}},\n'
+            '{arg_code}'
+            '{tab}return{suffix} = {func_name}{suffix}[{arg_names}];\n'
+            '{tab}{{{return_var_names}}}\n'
+            ']\n'
+        ).format(**locals())
+
+        return math_load + func_code
 
 class LibraryObject:
     """

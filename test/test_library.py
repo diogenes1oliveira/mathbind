@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import unittest
-from mathbind.types import BasicValueType, VoidType, PointerType
+from mathbind.types import BasicValueType, VoidType, PointerType, ArrayType
 from mathbind.library import FunctionObject
 
 
@@ -63,3 +63,60 @@ class TestFunctionObject(unittest.TestCase):
         f4 = FunctionObject.from_str('double func1(float * var);')
         s4 = 'func1Foo = LibraryFunctionLoad["trololo", "math_func1Foo", {{Real, 1, "Shared"}}, Real];\n'
         self.assertEqual(f4.math_load('trololo', 'Foo'), s4)
+
+    def test1_math_str(self):
+        f1 = FunctionObject.from_str('int myfunc(double arg);')
+        s1 = f1.math_load('trololo', 'Gen') + (
+            'myfunc[arg_] := Module[{returnGen, argGen},\n'
+            '\targGen = arg;\n'
+            '\treturnGen = myfuncGen[argGen];\n'
+            '\t{returnGen}\n'
+            ']\n'
+        )
+        self.assertEqual(f1.math_str('trololo', '\t', 'Gen'), s1)
+
+    def test2_math_str(self):
+        f2 = FunctionObject.from_str('int myfunc(const double * arg);')
+        s2 = f2.math_load('trololo', 'Gen') + (
+            'myfunc[arg_] := Module[{returnGen, argGen},\n'
+            '\targGen = arg;\n'
+            '\treturnGen = myfuncGen[argGen];\n'
+            '\t{returnGen}\n'
+            ']\n'
+        )
+        self.assertEqual(f2.math_str('trololo', '\t', 'Gen'), s2)
+
+    def test3_math_str(self):
+        f3 = FunctionObject.from_str('int myfunc(const double * arg, int size);')
+        s3 = f3.math_load('trololo', 'Gen') + (
+            'myfunc[arg_, size_] := Module[{returnGen, argGen, sizeGen},\n'
+            '\targGen = arg;\n'
+            '\tsizeGen = size;\n'
+            '\treturnGen = myfuncGen[argGen, sizeGen];\n'
+            '\t{returnGen}\n'
+            ']\n'
+        )
+        self.assertEqual(f3.math_str('trololo', '\t', 'Gen'), s3)
+
+    def test4_math_str(self):
+        f4 = FunctionObject.from_str('void myfunc(double * arg);')
+        s4 = f4.math_load('trololo', 'Gen') + (
+            'myfunc[arg_] := Module[{returnGen, argGen},\n' +
+            PointerType.from_str('double *').before_mathstr('arg', '\t', 'Gen') +
+            '\treturnGen = myfuncGen[argGen];\n'
+            '\t{returnGen, argGen}\n'
+            ']\n'
+        )
+        self.assertEqual(f4.math_str('trololo', '\t', 'Gen'), s4)
+
+    def test5_math_str(self):
+        f5 = FunctionObject.from_str('void myfunc(double arg[3]);')
+        s5 = f5.math_load('trololo', 'Gen') + (
+            'myfunc[arg_] := Module[{returnGen, argGen},\n' +
+            ArrayType.from_str('double [3]').before_mathstr('arg', '\t', 'Gen') +
+            '\treturnGen = myfuncGen[argGen];\n'
+            '\t{returnGen, argGen}\n'
+            ']\n'
+        )
+        self.assertEqual(f5.math_str('trololo', '\t', 'Gen'), s5)
+
