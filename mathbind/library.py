@@ -193,6 +193,7 @@ class LibraryObject:
         self.functions = [FunctionObject.from_obj(f) for f in info['functions']]
         self.libraries = info.get('libraries', [])
         self.lib_paths = info.get('lib_paths', [])
+        self.lib_paths = [p.format(current=self.path) for p in self.lib_paths]
 
     def __eq__(self, other):
         return (self.name == other.name and
@@ -209,7 +210,7 @@ class LibraryObject:
         }
 
     @classmethod
-    def from_file(cls, file, flags=''):
+    def from_file(cls, file, libraries=None, lib_paths=None, flags=''):
         """
         Returns a LibraryObject based on the given filename
         """
@@ -223,6 +224,10 @@ class LibraryObject:
         d.setdefault('flags', '')
         if flags:
             d['flags'] += ' ' + flags
+        d.setdefault('libraries', [])
+        d.setdefault('lib_paths', [])
+        d['libraries'] += libraries or []
+        d['lib_paths'] += lib_paths or []
         return LibraryObject(d)
 
     def to_cstr(self):

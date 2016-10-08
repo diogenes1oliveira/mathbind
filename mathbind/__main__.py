@@ -23,9 +23,8 @@ def generate_c(output=('o','','Output file, defaults to stdout'),
     fp_out.close()
     fp_in.close()
 
-@opster.command(usage='[-m MATH_EXECUTABLE] [-f FLAGS] def_file lib_file')
+@opster.command(usage='[-m MATH_EXECUTABLE] [-f FLAGS] def_file')
 def build_c(def_file,
-            lib_file,
             math_exec=('m', 'math -script ', 'Mathematica script runner'),
             flags=('f', '', 'Compiler flags')):
     """
@@ -33,7 +32,7 @@ def build_c(def_file,
     """
     lib = LibraryObject.from_file(def_file, flags)
 
-    lib.build_c_library(lib.path.joinpath(lib_file), math_exec)
+    lib.build_c_library(lib.path.joinpath(lib.name + '.c'), math_exec)
 
 
 @opster.command(usage='[-d FILE] [-o FILE]')
