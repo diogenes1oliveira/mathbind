@@ -4,6 +4,7 @@ import json
 from path import Path
 import os
 from mathbind.types import BasicType
+from mathbind.compilers.compiler import Compiler
 
 
 class FunctionObject:
@@ -189,11 +190,14 @@ class LibraryObject:
         if not self.path:
             self.path = Path('.').abspath()
 
+        self.files = info.get('files', [])
         self.flags = info.get('flags', '')
         self.functions = [FunctionObject.from_obj(f) for f in info['functions']]
         self.libraries = info.get('libraries', [])
         self.lib_paths = info.get('lib_paths', [])
         self.lib_paths = [p.format(current=self.path) for p in self.lib_paths]
+        self.include_paths = info.get('include_paths', [])
+        self.include_paths = [p.format(current=self.path) for p in self.include_paths]
 
     def __eq__(self, other):
         return (self.name == other.name and
@@ -210,7 +214,7 @@ class LibraryObject:
         }
 
     @classmethod
-    def from_file(cls, file, libraries=None, lib_paths=None, flags=''):
+    def from_file(cls, file, include_paths=None, libraries=None, lib_paths=None, flags=''):
         """
         Returns a LibraryObject based on the given filename
         """
@@ -226,8 +230,10 @@ class LibraryObject:
             d['flags'] += ' ' + flags
         d.setdefault('libraries', [])
         d.setdefault('lib_paths', [])
+        d.setdefault('include_paths', [])
         d['libraries'] += libraries or []
         d['lib_paths'] += lib_paths or []
+        d['include_paths'] += include_paths or []
         return LibraryObject(d)
 
     def to_cstr(self):
@@ -264,32 +270,21 @@ class LibraryObject:
         with open(c_output, 'w') as fp:
             fp.write(self.to_cstr())
 
-    def build_c_library(self, c_output, math_exec='math', flags=''):
-        with open(c_output, 'w') as fp:
-            fp.write(self.to_cstr())
+    def build_c_library(self, form_output, compiler='gcc'):
+        libname = self.path.joinpath(form_output.format(name=self.name))
+        gen_path = str(self.path.joinpath(self.name + 'Gen.c'))
 
-        libraries = '{' + ', '.join('"{}"'.format(lib) for lib in self.libraries) + '}'
-        lib_paths = '{' + ', '.join('"{}"'.format(lib) for lib in self.lib_paths) + '}'
-        flags = self.flags.replace('"', '\\"')
-        name = self.name
-        lib_name_file = self.path.joinpath(self.name + '.libname.txt')
+        with open(str(self.path.joinpath(gen_path)), 'w') as fp:
+            fp.write(self.to_cstr(libname))
 
-        math_code = (
-            'Needs["CCompilerDriver`"];\n' +
-            'cfile="{c_output}";\n' +
-            'libname=CreateLibrary[{{cfile}}, "{name}", "Libraries" -> {libraries}, "LibraryDirectories" -> {lib_paths},' +
-                ' "CompileOptions" -> "{flags}"];\n' +
-            'Export["{lib_name_file}", libname, "Text"];'
-        ).format(**locals())
+        compiler_type = Compiler.by_name(compiler)
+        comp = compiler_type(flags=self.flags,
+                             include_paths=self.include_paths,
+                             libs=self.libraries,
+                             lib_paths=self.lib_paths
+                             )
 
-        with open(self.path.joinpath(self.name+'.compiler.m'), 'w') as fp:
-            print(math_code, file=fp)
-
-        command = math_exec + str(self.path.joinpath(self.name+'.compiler.m'))
-        os.system(command)
-
-        with open(lib_name_file) as fp:
-            libname = fp.read().strip()
+        comp.compile_shared_library(self.files + [gen_path], libname)
 
         with open(str(self.path.joinpath(self.name + '.m')), 'w') as fp:
             fp.write(self.to_mathstr(libname))
