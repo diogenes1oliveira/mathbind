@@ -120,6 +120,17 @@ class TestFunctionObject(unittest.TestCase):
         )
         self.assertEqual(f5.math_str('trololo', '\t', 'Gen'), s5)
 
+    def test6_math_str(self):
+        f6 = FunctionObject.from_str('void myfunc_(double arg[3]);')
+        s6 = f6.math_load('trololo', 'Gen') + (
+            'myfunc[arg_] := Module[{returnGen, argGen},\n' +
+            ArrayType.from_str('double [3]').before_mathstr('arg', '\t', 'Gen') +
+            '\treturnGen = myfuncGen[argGen];\n'
+            '\t{returnGen, argGen}\n'
+            ']\n'
+        )
+        self.assertEqual(f6.math_str('trololo', '\t', 'Gen'), s6)
+
 
 class TestLibraryObject(unittest.TestCase):
     def setUp(self):

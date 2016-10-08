@@ -164,7 +164,7 @@ class FunctionObject:
                                for argname, arg in zip(self.argnames, self.args)
                                if arg.should_return])
         arg_names = ', '.join(argname + suffix for argname in self.argnames)
-        func_name = self.func_name
+        func_name = self.func_name.replace('_', '')
 
         func_code = (
             '{func_name}[{args_prototype}] := Module[{{{mod_var_names}}},\n'
