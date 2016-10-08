@@ -24,6 +24,10 @@ class ArrayType(BasicType):
     def should_return(self):
         return not self.const
 
+    @property
+    def math_name(self):
+        return '{{{self.basetype.math_name}, 1, "Shared"}}'.format(self=self)
+
     @classmethod
     def from_str(cls, s):
         """

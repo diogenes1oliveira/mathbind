@@ -46,6 +46,15 @@ class TestArrayType(unittest.TestCase):
         self.assertEqual(ArrayType.from_prototype_cstr(' const int counter [3] '),
                          (ArrayType(BasicValueType.from_str('int'), 'fixed', 3, True), 'counter'))
 
+    def test_math_name(self):
+        self.assertEqual(ArrayType.from_prototype_cstr('int num[]')[0].math_name,
+                         '{Integer, 1, "Shared"}')
+        self.assertEqual(ArrayType.from_prototype_cstr('const int num[]')[0].math_name,
+                         '{Integer, 1, "Shared"}')
+        self.assertEqual(ArrayType.from_prototype_cstr('float num[]')[0].math_name,
+                         '{Real, 1, "Shared"}')
+        self.assertEqual(ArrayType.from_prototype_cstr('double num[]')[0].math_name,
+                         '{Real, 1, "Shared"}')
 
     def test_basic_type(self):
         self.assertEqual(ArrayType.from_str('int [ ]').basetype, BasicValueType.from_str('int'))

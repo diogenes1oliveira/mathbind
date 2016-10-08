@@ -47,6 +47,7 @@ class TestFunctionObject(unittest.TestCase):
         func2 = FunctionObject.from_str('void myfunc(const double * web);')
         self.assertEqual(func2, func)
 
+    @unittest.skip
     def test_math_load(self):
         f1 = FunctionObject.from_str('int myfunc(double arg);')
         s = 'myFuncSuf = LibraryFunctionLoad["trololo", "math_myfuncSuf", {Real}, Integer]'
