@@ -93,3 +93,14 @@ class BasicValueType(BasicType):
         Returns a C string representing the declaration in a prototype return.
         """
         return self.c_name
+
+    @property
+    def math_convert_f(self):
+        """
+        Returns the Mathematica function responsible for converting values
+        to this one.
+        """
+        if 'float' in self.typename or 'double' in self.typename:
+            return 'N'
+        else:
+            return 'IntegerPart'

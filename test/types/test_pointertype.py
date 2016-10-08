@@ -63,6 +63,19 @@ class TestPointerType(unittest.TestCase):
         self.assertEqual(PointerType.from_str('const bool *').should_return,
                          False)
 
+    def test_before_mathstr(self):
+        double_t = PointerType.from_str('const double *')
+        self.assertEqual(double_t.before_mathstr('nada', '~~', 'Coisa'),
+                         '~~nadaCoisa = nada;\n')
+
+        int_t = PointerType.from_str('const int *')
+        self.assertEqual(int_t.before_mathstr('namevariable', '~~', 'Suffix'),
+                         '~~namevariableSuffix = namevariable;\n')
+
+        float_t = PointerType.from_str('float *')
+        self.assertEqual(float_t.before_mathstr('myVar', '\t', 'MySuffix'),
+                         '\tmyVarMySuffix = Developer`ToPackedArray[{N[myVar]}];\n')
+
     def test_retrieve_cstr(self):
         double_t = PointerType.from_str('const double *')
         self.assertEqual(double_t.retrieve_cstr('num', 0, suffix=''), 'double num = MArgument_getReal(Args[0]);\n')

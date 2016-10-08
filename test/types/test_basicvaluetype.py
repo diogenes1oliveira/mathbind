@@ -67,6 +67,14 @@ class TestBasicValueType(unittest.TestCase):
         self.assertEqual(BasicValueType.from_prototype_cstr('bool flag'),
                          (BasicValueType.from_str('bool'), 'flag'))
 
+    def test_before_mathstr(self):
+        int_t = BasicValueType.from_str('int')
+        self.assertEqual(int_t.before_mathstr('var', '', 'None'),
+                         'varNone = var;\n')
+        long_t = BasicValueType.from_str('long long')
+        self.assertEqual(long_t.before_mathstr('var', '', 'None'),
+                         'varNone = var;\n')
+
     def test_retrieve_cstr(self):
         int_t = BasicValueType.from_str('int')
         self.assertEqual(int_t.retrieve_cstr('num', 1, suffix=''), 'int num = MArgument_getInteger(Args[1]);\n')
@@ -99,3 +107,18 @@ class TestBasicValueType(unittest.TestCase):
                          'int flag')
         self.assertEqual(BasicValueType.from_str('float').prototype_cstr('num'),
                          'float num')
+
+    def test_math_convert_f(self):
+        self.assertEqual(BasicValueType.from_str('int').math_convert_f,
+                         'IntegerPart')
+        self.assertEqual(BasicValueType.from_str('long long').math_convert_f,
+                         'IntegerPart')
+        self.assertEqual(BasicValueType.from_str('unsigned').math_convert_f,
+                         'IntegerPart')
+        self.assertEqual(BasicValueType.from_str('bool').math_convert_f,
+                         'IntegerPart')
+
+        self.assertEqual(BasicValueType.from_str('double').math_convert_f,
+                         'N')
+        self.assertEqual(BasicValueType.from_str('float').math_convert_f,
+                         'N')

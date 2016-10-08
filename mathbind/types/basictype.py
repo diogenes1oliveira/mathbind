@@ -81,7 +81,9 @@ class BasicType:
         - tab (str): string to add at the beginning of each line.
         - suffix (str): suffix to add after the variable, defaults to None
         '''
-        return ''
+        return '{tab}{argname}{suffix} = {argname};\n'.format(
+            tab=tab, argname=argname, suffix=suffix
+        )
 
     def after_cstr(self, argname, tab='', suffix=None):
         """

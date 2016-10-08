@@ -62,6 +62,15 @@ class PointerType(BasicType):
     def __repr__(self):
         return 'PointerType(basetype=%r, const=%r)' % (self.basetype, self.const)
 
+    def before_mathstr(self, argname, tab='', suffix=None):
+        if suffix is None:
+            suffix = self.default_suffix
+        if self.const:
+            return super().before_mathstr(argname, tab, suffix)
+        convert_f = self.basetype.math_convert_f
+        form = '{tab}{argname}{suffix} = Developer`ToPackedArray[{{{convert_f}[{argname}]}}];\n'
+        return form.format(**locals())
+
     def retrieve_cstr(self, argname, index, tab='', suffix=None):
         if suffix is None:
             suffix = self.default_suffix
