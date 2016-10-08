@@ -140,7 +140,7 @@ class FunctionObject:
         """
         arg_code = ', '.join(arg.math_name for arg in self.args)
         ret_code = self.return_type.math_name
-        func_name = self.func_name
+        func_name = self.func_name.replace('_', '')
         if suffix is None:
             suffix = BasicType.default_suffix
         form = '{func_name}{suffix} = LibraryFunctionLoad["{libname}", "math_{func_name}{suffix}", {{{arg_code}}}, {ret_code}];\n'
