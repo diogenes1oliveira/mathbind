@@ -63,6 +63,18 @@ class TestPointerType(unittest.TestCase):
         self.assertEqual(PointerType.from_str('const bool *').should_return,
                          False)
 
+    def test_math_name(self):
+        self.assertEqual(PointerType.from_str('const double *').math_name,
+                         'Real')
+        self.assertEqual(PointerType.from_str('float *').math_name,
+                         '{Real, 1, "Shared"}')
+        self.assertEqual(PointerType.from_str('int *').math_name,
+                         '{Integer, 1, "Shared"}')
+        self.assertEqual(PointerType.from_str('const long long int *').math_name,
+                         'Integer')
+        self.assertEqual(PointerType.from_str('const bool *').math_name,
+                         'Boolean')
+
     def test_before_mathstr(self):
         double_t = PointerType.from_str('const double *')
         self.assertEqual(double_t.before_mathstr('nada', '~~', 'Coisa'),

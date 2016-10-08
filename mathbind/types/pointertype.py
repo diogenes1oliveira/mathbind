@@ -56,6 +56,14 @@ class PointerType(BasicType):
     def should_return(self):
         return not self.const
 
+    @property
+    def math_name(self):
+        if self.const:
+            return self.basetype.math_name
+        else:
+            base_name = self.basetype.math_name
+            return '{{{0}, 1, "Shared"}}'.format(base_name)
+
     def __eq__(self, other):
         return self.basetype == other.basetype and self.const == other.const
 
