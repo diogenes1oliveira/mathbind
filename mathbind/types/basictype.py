@@ -11,7 +11,7 @@ class BasicType:
     - default_suffix (str): string to add to each generated identifier, used
     to avoid clashes.
     - default_value  (str): default value of the type, defaults to '0'
-
+    - should_return  (bool): True if the value after the function should be returned.
     Instance properties
     - typename (str): real typename, as declared
     """

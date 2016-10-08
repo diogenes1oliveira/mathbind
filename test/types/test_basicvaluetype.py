@@ -33,6 +33,13 @@ class TestBasicValueType(unittest.TestCase):
         self.assertEqual(BasicValueType('bool').math_name, 'Boolean')
         self.assertEqual(BasicValueType('double').math_name, 'Real')
 
+    def test_should_return(self):
+        self.assertEqual(BasicValueType('double').should_return, False)
+        self.assertEqual(BasicValueType('int').should_return, False)
+        self.assertEqual(BasicValueType('bool').should_return, False)
+        self.assertEqual(BasicValueType('float').should_return, False)
+        self.assertEqual(BasicValueType('long long').should_return, False)
+
     def test_from_str(self):
         self.assertEqual(BasicValueType.from_str('bool'), BasicValueType('bool'))
         self.assertEqual(BasicValueType.from_str('long     long '), BasicValueType('long long'))
