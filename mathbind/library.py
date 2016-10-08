@@ -128,6 +128,12 @@ class FunctionObject:
         return_type = self.return_type.prototype_return_cstr()
         return return_type + ' ' + self.func_name + '(' + args + ');\n'
 
+    def math_load(self, libname, suffix=None):
+        """
+        Returns a Mathematica string to load the function from the library.
+        """
+
+
 
 class LibraryObject:
     """

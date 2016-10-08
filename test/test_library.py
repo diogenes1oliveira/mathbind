@@ -46,3 +46,8 @@ class TestFunctionObject(unittest.TestCase):
         func = FunctionObject(name, return_type, [arg1name], [arg1])
         func2 = FunctionObject.from_str('void myfunc(const double * web);')
         self.assertEqual(func2, func)
+
+    def test_math_load(self):
+        f1 = FunctionObject.from_str('int myfunc(double arg);')
+        s = 'myFuncSuf = LibraryFunctionLoad["trololo", "math_myfuncSuf", {Real}, Integer]'
+        self.assertEqual(f1.mathload('trololo', 'Suf'), s)
