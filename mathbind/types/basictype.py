@@ -78,16 +78,29 @@ class BasicType:
     def before_mathstr(self, argname, tab='', suffix=None):
         '''
         Returns a Mathematica string with the instructions to convert the
-        Mathematica object before passing it to the C generated function, defaults
+        Mathematica object before passing it to the C generated function.
+        Args:
+        - argname (str): name of the argument to retrieve
+        - tab (str): string to add at the beginning of each line.
+        - suffix (str): suffix to add after the variable, defaults to None
+        '''
+        if suffix is None:
+            suffix = self.default_suffix
+        return BasicType.templates['before_mathstr'].format(
+            tab=tab, argname=argname, suffix=suffix
+        )
+
+    def after_mathstr(self, argname, tab='', suffix=None):
+        '''
+        Returns a Mathematica string with the instructions to convert the
+        Mathematica object after passing it to the C generated function, defaults
         to "".
         Args:
         - argname (str): name of the argument to retrieve
         - tab (str): string to add at the beginning of each line.
         - suffix (str): suffix to add after the variable, defaults to None
         '''
-        return BasicType.templates['before_mathstr'].format(
-            tab=tab, argname=argname, suffix=suffix
-        )
+        return ''
 
     def after_cstr(self, argname, tab='', suffix=None):
         """

@@ -23,6 +23,9 @@ class PointerType(BasicType):
         'before_mathstr': (
             '{tab}{argname}{suffix} = Developer`ToPackedArray[{{{convert_f}[{argname}]}}];\n'
         ),
+        'after_mathstr': (
+            '{tab}{argname}{suffix} = {argname}{suffix}[[1]];\n'
+        ),
         'after_cstr': (
             '{tab}* data_{argname}{suffix} = {argname};\n'
             '{tab}libData{suffix}->MTensor_disownAll(mtensor_{argname}{suffix});\n'
@@ -94,6 +97,13 @@ class PointerType(BasicType):
             return super().before_mathstr(argname, tab, suffix)
         convert_f = self.basetype.math_convert_f
         return self.templates['before_mathstr'].format(**locals())
+
+    def after_mathstr(self, argname, tab='', suffix=None):
+        if suffix is None:
+            suffix = self.default_suffix
+        if self.const:
+            return super().after_mathstr(argname, tab, suffix)
+        return self.templates['after_mathstr'].format(**locals())
 
     def retrieve_cstr(self, argname, index, tab='', suffix=None):
         if suffix is None:

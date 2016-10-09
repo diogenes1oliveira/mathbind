@@ -105,6 +105,16 @@ class TestPointerType(unittest.TestCase):
         self.assertEqual(int_t.before_mathstr('myVar', '\t', 'MySuffix'),
                          s)
 
+    def test_after_mathstr(self):
+        double_t = PointerType.from_str('const double *')
+        self.assertEqual(double_t.after_mathstr('myVar', '   ', 'Suf'), '')
+
+        int_t = PointerType.from_str('int *')
+        s = PointerType.templates['after_mathstr'].format(
+            tab='   ', argname='myVar', suffix='Suf'
+        )
+        self.assertEqual(double_t.after_mathstr('myVar', '   ', 'Suf'), '')
+
     def test_retrieve_cstr(self):
         double_t = PointerType.from_str('const double *')
         s = double_t.templates['retrieve_cstr_const'].format(

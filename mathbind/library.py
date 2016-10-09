@@ -170,10 +170,14 @@ class FunctionObject:
         arg_names = ', '.join(argname + suffix for argname in self.argnames)
         func_name = self.func_name.replace('_', '')
 
+        after_code = ''.join(arg.after_mathstr(argname, tab, suffix)
+                             for argname, arg in zip(self.argnames, self.args))
+
         func_code = (
             '{func_name}[{args_prototype}] := Module[{{{mod_var_names}}},\n'
             '{arg_code}'
             '{tab}return{suffix} = {func_name}{suffix}[{arg_names}];\n'
+            '{after_code}'
             '{tab}{{{return_var_names}}}\n'
             ']\n'
         ).format(**locals())

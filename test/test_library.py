@@ -106,6 +106,7 @@ class TestFunctionObject(unittest.TestCase):
             'myfunc[arg_] := Module[{returnGen, argGen},\n' +
             PointerType.from_str('double *').before_mathstr('arg', '\t', 'Gen') +
             '\treturnGen = myfuncGen[argGen];\n'
+            '\targGen = argGen[[1]];\n'
             '\t{argGen}\n'
             ']\n'
         )
