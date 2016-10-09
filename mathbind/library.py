@@ -3,7 +3,7 @@
 import json
 from path import Path
 import os
-from mathbind.types import BasicType
+from mathbind.types import BasicType, VoidType
 from mathbind.compilers.compiler import Compiler
 
 
@@ -163,7 +163,7 @@ class FunctionObject:
         args_prototype = ', '.join(argname + '_' for argname in self.argnames)
         mod_var_names = ', '.join(['return' + suffix] +
                               [argname + suffix for argname in self.argnames])
-        return_var_names = ', '.join(['return' + suffix] +
+        return_var_names = ', '.join((['return' + suffix] if self.return_type != VoidType('void') else []) +
                               [argname + suffix
                                for argname, arg in zip(self.argnames, self.args)
                                if arg.should_return])

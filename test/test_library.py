@@ -106,7 +106,7 @@ class TestFunctionObject(unittest.TestCase):
             'myfunc[arg_] := Module[{returnGen, argGen},\n' +
             PointerType.from_str('double *').before_mathstr('arg', '\t', 'Gen') +
             '\treturnGen = myfuncGen[argGen];\n'
-            '\t{returnGen, argGen}\n'
+            '\t{argGen}\n'
             ']\n'
         )
         self.assertEqual(f4.math_str('trololo', '\t', 'Gen'), s4)
@@ -117,7 +117,7 @@ class TestFunctionObject(unittest.TestCase):
             'myfunc[arg_] := Module[{returnGen, argGen},\n' +
             ArrayType.from_str('double [3]').before_mathstr('arg', '\t', 'Gen') +
             '\treturnGen = myfuncGen[argGen];\n'
-            '\t{returnGen, argGen}\n'
+            '\t{argGen}\n'
             ']\n'
         )
         self.assertEqual(f5.math_str('trololo', '\t', 'Gen'), s5)
@@ -128,7 +128,7 @@ class TestFunctionObject(unittest.TestCase):
             'myfunc[arg_] := Module[{returnGen, argGen},\n' +
             ArrayType.from_str('double [3]').before_mathstr('arg', '\t', 'Gen') +
             '\treturnGen = myfuncGen[argGen];\n'
-            '\t{returnGen, argGen}\n'
+            '\t{argGen}\n'
             ']\n'
         )
         self.assertEqual(f6.math_str('trololo', '\t', 'Gen'), s6)

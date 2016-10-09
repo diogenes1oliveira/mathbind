@@ -22,6 +22,10 @@ class VoidType(BasicType):
     def math_name(self):
         return '"Void"'
 
+    @property
+    def should_return(self):
+        return False
+
     @classmethod
     def from_str(self, s):
         """
