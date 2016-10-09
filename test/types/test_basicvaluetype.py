@@ -79,10 +79,22 @@ class TestBasicValueType(unittest.TestCase):
 
     def test_retrieve_cstr(self):
         int_t = BasicValueType.from_str('int')
-        self.assertEqual(int_t.retrieve_cstr('num', 1, suffix=''), 'int num = MArgument_getInteger(Args[1]);\n')
+        s = int_t.templates['retrieve_cstr'].format(
+            c_name=int_t.c_name,
+            math_name=int_t.math_name,
+            tab='kkk', suffix='Trololo', argname='quemsoueu', index=1
+        )
+        self.assertEqual(int_t.retrieve_cstr('quemsoueu', 1, tab='kkk', suffix='Trololo'),
+                         s)
 
-        int_t = BasicValueType.from_str('int')
-        self.assertEqual(int_t.retrieve_cstr('num', 1, suffix='Gen'), 'int num = MArgument_getInteger(ArgsGen[1]);\n')
+        double_t = BasicValueType.from_str('double ')
+        s = double_t.templates['retrieve_cstr'].format(
+            c_name=double_t.c_name,
+            math_name=double_t.math_name,
+            tab='kkk', suffix='Trololo', argname='quemsoueu', index=1
+        )
+        self.assertEqual(double_t.retrieve_cstr('quemsoueu', 1, tab='kkk', suffix='Trololo'),
+                         s)
 
         int_t = BasicValueType.from_str('long long')
         self.assertEqual(int_t.retrieve_cstr('num', 1, suffix=''), 'long long num = MArgument_getInteger(Args[1]);\n')
@@ -90,17 +102,19 @@ class TestBasicValueType(unittest.TestCase):
     def test_return_cstr(self):
         long_t = BasicValueType.from_str('long long')
         func_call = 'trololo()'
-        s = (
-            ' long long return_valueGen3 = trololo();\n'
-            ' MArgument_setInteger(ResGen3, return_valueGen3);\n'
+        s = long_t.templates['return_cstr'].format(
+            c_name=long_t.c_name,
+            math_name=long_t.math_name,
+            tab='kkk', suffix='Trololo', func_call=func_call
         )
-        self.assertEqual(long_t.return_cstr(func_call, tab=' ', suffix='Gen3'), s)
+        self.assertEqual(long_t.return_cstr(func_call, tab='kkk', suffix='Trololo'), s)
 
         float_t = BasicValueType.from_str('double')
-        func_call = 'trolosdflo()'
-        s = (
-            ' double return_valueCap = trolosdflo();\n'
-            ' MArgument_setReal(ResCap, return_valueCap);\n'
+        func_call = 'trolosdflo(&arg1, asd2)'
+        s = float_t.templates['return_cstr'].format(
+            c_name=float_t.c_name,
+            math_name=float_t.math_name,
+            tab=' ', suffix='Cap', func_call=func_call
         )
         self.assertEqual(float_t.return_cstr(func_call, tab=' ', suffix='Cap'), s)
 

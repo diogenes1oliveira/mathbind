@@ -13,6 +13,16 @@ class BasicValueType(BasicType):
     - c_name (str): corresponding C type (int, long long, float).
     """
 
+    templates = {
+        'retrieve_cstr': (
+            '{tab}{c_name} {argname} = MArgument_get{math_name}(Args{suffix}[{index}]);\n'
+        ),
+        'return_cstr': (
+            '{tab}{c_name} return_value{suffix} = {func_call};\n'
+            '{tab}MArgument_set{math_name}(Res{suffix}, return_value{suffix});\n'
+        )
+    }
+
     def __init__(self, typename):
 
         self.typename = typename
@@ -73,17 +83,16 @@ class BasicValueType(BasicType):
     def retrieve_cstr(self, argname, index, tab='', suffix=None):
         if suffix is None:
             suffix = self.default_suffix
-        form = '{tab}{self.c_name} {argname} = MArgument_get{self.math_name}(Args{suffix}[{index}]);\n'
-        return form.format(argname=argname, self=self, tab=tab, index=index, suffix=suffix)
+        c_name, math_name = self.c_name, self.math_name
+        form = self.templates['retrieve_cstr']
+        return form.format(**locals())
 
     def return_cstr(self, func_call, tab='', suffix=None):
         if suffix is None:
             suffix = self.default_suffix
-        form = (
-            '{tab}{self.c_name} return_value{suffix} = {func_call};\n'
-            '{tab}MArgument_set{self.math_name}(Res{suffix}, return_value{suffix});\n'
-        )
-        return form.format(func_call=func_call, tab=tab, self=self, suffix=suffix)
+        c_name, math_name = self.c_name, self.math_name
+        form = self.templates['return_cstr']
+        return form.format(**locals())
 
     def prototype_cstr(self, argname):
         return self.c_name + ' ' + argname
