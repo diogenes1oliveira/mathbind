@@ -24,6 +24,19 @@ class ArrayType(BasicType):
         ),
         'before_mathstr' : (
             '{tab}{argname}{suffix} = Developer`ToPackedArray[Map[{convert_f}, {argname}{suffix}]];\n'
+        ),
+        'after_cstr': (
+            '{tab}if(sizeof({basetype_c_math_name}) != sizeof({basetype_c_name})) {{\n'
+            '{tab}{tab}for(int i{suffix} = 0; i{suffix} < {size}; ++i{suffix})\n'
+            '{tab}{tab}{tab}data_{argname}Gen[i{suffix}] = {argname}[i{suffix}];\n'
+            '{tab}{tab}free({argname});\n'
+            '{tab}}}\n'
+            '{tab}libData{suffix}->MTensor_disownAll(mtensor_{argname}{suffix});\n'
+        ),
+        'retrieve_cstr':(
+            '{tab}MTensor mtensor_{argname}{suffix} = MArgument_getMTensor(Args{suffix}[{index}]);\n'
+            '{tab}{basetype_c_math_name} * data_{argname}{suffix} = '
+            'libData{suffix}->MTensor_get{basetype_math_name}Data(mtensor_{argname}{suffix});\n'
         )
     }
 
@@ -127,16 +140,10 @@ class ArrayType(BasicType):
         """
         if suffix is None:
             suffix = self.default_suffix
-        convert = (
-            '{tab}/* Copying and releasing {argname} */\n'
-            '{tab}if(sizeof({self.basetype.c_math_name}) != sizeof({self.basetype.c_name})) {{\n'
-            '{tab}    for(int i{suffix} = 0; i{suffix} < {self.size}; ++i{suffix})\n'
-            '{tab}        data_{argname}Gen[i{suffix}] = {argname}[i{suffix}];\n'
-            '{tab}    free({argname});\n'
-            '{tab}}}\n'
-            '{tab}libData{suffix}->MTensor_disownAll(mtensor_{argname}{suffix});\n'
-        )
-        return convert.format(argname=argname, self=self, tab=tab, suffix=suffix)
+        basetype_c_name = self.basetype.c_name
+        basetype_c_math_name = self.basetype.c_math_name
+        size = self.size
+        return ArrayType.templates['after_cstr'].format(**locals())
 
     def retrieve_cstr(self, argname, index, tab='', suffix=None):
         """
@@ -150,12 +157,10 @@ class ArrayType(BasicType):
         if suffix is None:
             suffix = self.default_suffix
         before = self.before_cstr(argname, tab, suffix)
+        basetype_math_name = self.basetype.math_name
+        basetype_c_math_name = self.basetype.c_math_name
 
-        form = (
-            '{tab}MTensor mtensor_{argname}{suffix} = MArgument_getMTensor(Args{suffix}[{index}]);\n'
-            '{tab}{self.basetype.c_math_name} * data_{argname}{suffix} = libData{suffix}->MTensor_get{self.basetype.math_name}Data(mtensor_{argname}{suffix});\n')
-
-        return form.format(argname=argname, self=self, tab=tab, index=index, suffix=suffix) + before
+        return ArrayType.templates['retrieve_cstr'].format(**locals()) + before
 
     def prototype_cstr(self, argname):
         """

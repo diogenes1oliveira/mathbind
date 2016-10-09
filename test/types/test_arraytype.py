@@ -104,35 +104,29 @@ class TestArrayType(unittest.TestCase):
 
     def test_after_cstr(self):
         int_t = ArrayType.from_str('int [3]')
-        s = (
-            ' /* Copying and releasing triple */\n'
-            ' if(sizeof(mint) != sizeof(int)) {\n'
-            '     for(int iGen = 0; iGen < 3; ++iGen)\n'
-            '         data_tripleGen[iGen] = triple[iGen];\n'
-            '     free(triple);\n'
-            ' }\n'
-            ' libDataGen->MTensor_disownAll(mtensor_tripleGen);\n'
+        s = ArrayType.templates['after_cstr'].format(
+            basetype_c_name=int_t.basetype.c_name,
+            basetype_c_math_name=int_t.basetype.c_math_name,
+            argname='var', suffix='Suffix', tab='\t', size=3
         )
-        self.assertEqual(int_t.after_cstr('triple', ' ', 'Gen'), s)
+        self.assertEqual(int_t.after_cstr('var', '\t', 'Suffix'), s)
 
-        double_t = ArrayType.from_str('double [3]')
-        s = (
-            ' /* Copying and releasing triple */\n'
-            ' if(sizeof(mreal) != sizeof(double)) {\n'
-            '     for(int iGeni = 0; iGeni < 3; ++iGeni)\n'
-            '         data_tripleGen[iGeni] = triple[iGeni];\n'
-            '     free(triple);\n'
-            ' }\n'
-            ' libDataGeni->MTensor_disownAll(mtensor_tripleGeni);\n'
+        double_t = ArrayType.from_str('double [12]')
+        s = ArrayType.templates['after_cstr'].format(
+            basetype_c_name=double_t.basetype.c_name,
+            basetype_c_math_name=double_t.basetype.c_math_name,
+            argname='v_', suffix='__1', tab='\t', size=12
         )
-        self.assertEqual(double_t.after_cstr('triple', ' ', 'Geni'), s)
+        self.assertEqual(double_t.after_cstr('v_', '\t', '__1'), s)
 
     def test_retrieve_cstr(self):
         double_t = ArrayType.from_str('double [3]')
         before = double_t.before_cstr('ironman', ' ', 'Ant')
-        s = (
-            ' MTensor mtensor_ironmanAnt = MArgument_getMTensor(ArgsAnt[2]);\n'
-            ' mreal * data_ironmanAnt = libDataAnt->MTensor_getRealData(mtensor_ironmanAnt);\n')
+        s = ArrayType.templates['retrieve_cstr'].format(
+            basetype_math_name=double_t.basetype.math_name,
+            basetype_c_math_name=double_t.basetype.c_math_name,
+            argname='ironman', suffix='Ant', tab=' ', index=2
+        )
         self.assertEqual(double_t.retrieve_cstr('ironman', 2, ' ', 'Ant'), s + before)
 
     def test_before_mathstr(self):
