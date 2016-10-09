@@ -158,3 +158,13 @@ class TestPointerType(unittest.TestCase):
 
         long_t = PointerType.from_str('long *')
         self.assertEqual(long_t.pass_cstr('num'), '&num')
+
+    def test_after_cstr(self):
+        const_int_t = PointerType.from_str('const int *')
+        self.assertEqual(const_int_t.after_cstr('var', '\t', 'Suffix'), '')
+
+        float_t = PointerType.from_str('float *')
+        s = PointerType.templates['after_cstr'].format(
+            argname='var', tab='\t', suffix='M'
+        )
+        self.assertEqual(float_t.after_cstr('var', '\t', 'M'), s)

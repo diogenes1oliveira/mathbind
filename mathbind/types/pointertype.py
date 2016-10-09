@@ -21,9 +21,12 @@ class PointerType(BasicType):
         ),
         'before_mathstr_no_const': (
             '{tab}{argname}{suffix} = Developer`ToPackedArray[{{{convert_f}[{argname}]}}];\n'
+        ),
+        'after_cstr': (
+            '* {tab}data_{argname}{suffix} = {argname};\n'
+            '{tab}libData{suffix}->MTensor_disownAll(mtensor_{argname}{suffix});\n'
         )
     }
-
     def __init__(self, basetype, const=False):
         self.typename = basetype.typename + ' * '
         if const:
@@ -120,7 +123,5 @@ class PointerType(BasicType):
         if self.const:
             return ''
 
-        convert = (
-            '{tab}libData{suffix}->MTensor_disownAll(mtensor_{argname}{suffix});\n'
-        )
-        return convert.format(argname=argname, self=self, tab=tab, suffix=suffix)
+        convert = PointerType.templates['after_cstr']
+        return convert.format(argname=argname, tab=tab, suffix=suffix)
