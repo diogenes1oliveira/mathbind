@@ -19,7 +19,7 @@ class PointerType(BasicType):
             '{tab}MTensor mtensor_{argname}{suffix} = MArgument_getMTensor(Args{suffix}[{index}]);\n'
             '{tab}{basetype_c_name} {argname} = * (libData{suffix}->MTensor_get{basetype_math_name}Data(mtensor_{argname}{suffix}));\n'
         ),
-        'before_mathstr_no_const': (
+        'before_mathstr': (
             '{tab}{argname}{suffix} = Developer`ToPackedArray[{{{convert_f}[{argname}]}}];\n'
         ),
         'after_cstr': (
@@ -92,8 +92,7 @@ class PointerType(BasicType):
         if self.const:
             return super().before_mathstr(argname, tab, suffix)
         convert_f = self.basetype.math_convert_f
-        form = '{tab}{argname}{suffix} = Developer`ToPackedArray[{{{convert_f}[{argname}]}}];\n'
-        return form.format(**locals())
+        return self.templates['before_mathstr'].format(**locals())
 
     def retrieve_cstr(self, argname, index, tab='', suffix=None):
         if suffix is None:

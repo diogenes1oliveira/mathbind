@@ -91,14 +91,14 @@ class TestPointerType(unittest.TestCase):
         self.assertEqual(int_t.before_mathstr('myVar', '\t', 'MySuffix'), s)
 
         float_t = PointerType.from_str('float *')
-        s = PointerType.templates['before_mathstr_no_const'].format(
+        s = PointerType.templates['before_mathstr'].format(
             tab='\t', argname='myVar', suffix='MySuffix',
             convert_f = float_t.basetype.math_convert_f
         )
         self.assertEqual(float_t.before_mathstr('myVar', '\t', 'MySuffix'), s)
 
         int_t = PointerType.from_str('int *')
-        s = PointerType.templates['before_mathstr_no_const'].format(
+        s = PointerType.templates['before_mathstr'].format(
             tab='\t', argname='myVar', suffix='MySuffix',
             convert_f=int_t.basetype.math_convert_f
         )
