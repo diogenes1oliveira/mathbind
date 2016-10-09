@@ -11,6 +11,12 @@ class PointerType(BasicType):
     - const (bool): is it constant?
     """
 
+    templates = {
+        'after_cstr': (
+            '* {tab}data_{argname}{suffix} = {argname};\n'
+            '{tab}libData{suffix}->MTensor_disownAll(mtensor_{argname}{suffix});\n'
+        )
+    }
     def __init__(self, basetype, const=False):
         self.typename = basetype.typename + ' * '
         if const:
@@ -104,7 +110,5 @@ class PointerType(BasicType):
         if self.const:
             return ''
 
-        convert = (
-            '{tab}libData{suffix}->MTensor_disownAll(mtensor_{argname}{suffix});\n'
-        )
-        return convert.format(argname=argname, self=self, tab=tab, suffix=suffix)
+        convert = PointerType.templates['after_cstr']
+        return convert.format(argname=argname, tab=tab, suffix=suffix)
