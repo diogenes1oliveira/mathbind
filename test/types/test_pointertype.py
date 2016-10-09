@@ -135,7 +135,8 @@ class TestPointerType(unittest.TestCase):
         s = int_t.templates['retrieve_cstr_no_const'].format(
             argname='arg2', index=2,suffix='Vis', tab='',
             basetype_c_name=int_t.basetype.c_name,
-            basetype_math_name=int_t.basetype.math_name
+            basetype_math_name=int_t.basetype.math_name,
+            basetype_c_math_name=int_t.basetype.c_math_name
         )
         self.assertEqual(int_t.retrieve_cstr('arg2', 2, suffix='Vis'),
                          s)
@@ -144,7 +145,8 @@ class TestPointerType(unittest.TestCase):
         s = bool_t.templates['retrieve_cstr_no_const'].format(
             argname='flag', index=200,suffix='Fal', tab='',
             basetype_c_name=bool_t.basetype.c_name,
-            basetype_math_name=bool_t.basetype.math_name
+            basetype_math_name=bool_t.basetype.math_name,
+            basetype_c_math_name=bool_t.basetype.c_math_name
         )
         self.assertEqual(bool_t.retrieve_cstr('flag', 200, suffix='Fal'),
                          s)

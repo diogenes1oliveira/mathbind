@@ -17,13 +17,14 @@ class PointerType(BasicType):
         ),
         'retrieve_cstr_no_const': (
             '{tab}MTensor mtensor_{argname}{suffix} = MArgument_getMTensor(Args{suffix}[{index}]);\n'
-            '{tab}{basetype_c_name} {argname} = * (libData{suffix}->MTensor_get{basetype_math_name}Data(mtensor_{argname}{suffix}));\n'
+            '{tab}{basetype_c_math_name} * data_{argname}{suffix} = libData{suffix}->MTensor_get{basetype_math_name}Data(mtensor_{argname}{suffix});\n'
+            '{tab}{basetype_c_name} {argname} = * data_{argname}{suffix};\n'
         ),
         'before_mathstr': (
             '{tab}{argname}{suffix} = Developer`ToPackedArray[{{{convert_f}[{argname}]}}];\n'
         ),
         'after_cstr': (
-            '* {tab}data_{argname}{suffix} = {argname};\n'
+            '{tab}* data_{argname}{suffix} = {argname};\n'
             '{tab}libData{suffix}->MTensor_disownAll(mtensor_{argname}{suffix});\n'
         )
     }
@@ -100,6 +101,7 @@ class PointerType(BasicType):
 
         basetype_c_name = self.basetype.c_name
         basetype_math_name = self.basetype.math_name
+        basetype_c_math_name = self.basetype.c_math_name
 
         if self.const:
             template_name = 'retrieve_cstr_const'

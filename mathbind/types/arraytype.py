@@ -23,7 +23,7 @@ class ArrayType(BasicType):
             '{tab}}}\n'
         ),
         'before_mathstr' : (
-            '{tab}{argname}{suffix} = Developer`ToPackedArray[Map[{convert_f}, {argname}{suffix}]];\n'
+            '{tab}{argname}{suffix} = Developer`ToPackedArray[Map[{convert_f}, {argname}]];\n'
         ),
         'after_cstr': (
             '{tab}if(sizeof({basetype_c_math_name}) != sizeof({basetype_c_name})) {{\n'
