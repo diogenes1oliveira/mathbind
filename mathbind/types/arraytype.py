@@ -13,6 +13,20 @@ class ArrayType(BasicType):
     - const (bool): can the parameter be changed?
     """
 
+    templates = {
+        'before_cstr': (
+            '{tab}{basetype_c_name} * {argname} = ({basetype_c_name} *) data_{argname}{suffix};\n'
+            '{tab}if(sizeof({basetype_c_math_name}) != sizeof({basetype_c_name})) {{\n'
+            '{tab}{tab}{argname} = malloc(sizeof({basetype_c_name}) * {size});\n'
+            '{tab}{tab}for(int i{suffix} = 0; i{suffix} < {size}; ++i{suffix})\n'
+            '{tab}{tab}{tab}{argname}[i{suffix}] = data_{argname}Gen[i{suffix}];\n'
+            '{tab}}}\n'
+        ),
+        'before_mathstr' : (
+            '{tab}{argname}{suffix} = Developer`ToPackedArray[Map[{convert_f}, {argname}{suffix}]];\n'
+        )
+    }
+
     def __init__(self, basetype, policy, size=None, const=False):
         self.basetype = basetype
         self.typename = basetype.typename + ' [{}]'.format('' if size is None else size)
@@ -91,39 +105,20 @@ class ArrayType(BasicType):
         """
         if suffix is None:
             suffix = self.default_suffix
-        convert = (
-            '{tab}/* Converting {argname} */\n'
-            '{tab}{self.basetype.c_name} * {argname} = ({self.basetype.c_name} *) data_{argname}{suffix};\n'
-            '{tab}if(sizeof({self.basetype.c_math_name}) != sizeof({self.basetype.c_name})) {{\n'
-            '{tab}    {argname} = malloc(sizeof({self.basetype.c_name}) * {self.size});\n'
-            '{tab}    for(int i{suffix} = 0; i{suffix} < {self.size}; ++i{suffix})\n'
-            '{tab}        {argname}[i{suffix}] = data_{argname}Gen[i{suffix}];\n'
-            '{tab}}}\n'
-        )
-        return convert.format(argname=argname, self=self, tab=tab, suffix=suffix)
+        basetype_c_name = self.basetype.c_name
+        basetype_c_math_name = self.basetype.c_math_name
+        size = self.size
+        return ArrayType.templates['before_cstr'].format(**locals())
 
     def before_mathstr(self, argname, tab='', suffix=None):
         if suffix is None:
             suffix = self.default_suffix
 
-        if 'float' in self.typename or 'double' in self.typename:
-            convert_f = 'N'
-        else:
-            convert_f = 'IntegerPart'
+        convert_f = self.basetype.math_convert_f
+        size = self.size
+        form = ArrayType.templates['before_mathstr']
 
-        if self.const:
-            form = (
-                '{tab}{argname}{suffix} = If[Length[{argname}] == 0, ConstantArray[0, {self.size}], {argname}];\n'
-                '{tab}{argname}{suffix} = Developer`ToPackedArray[Map[{convert_f}, {argname}{suffix}]];\n'
-            )
-        else:
-            form = (
-                '{tab}{argname}{suffix} = {argname};\n'
-                '{tab}{argname}{suffix} = Developer`ToPackedArray[Map[{convert_f}, {argname}{suffix}]];\n'
-            )
-
-        return form.format(argname=argname, tab=tab,
-                           suffix=suffix, self=self, convert_f=convert_f)
+        return form.format(**locals())
 
     def after_cstr(self, argname, tab='', suffix=None):
         """

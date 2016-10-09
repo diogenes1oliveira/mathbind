@@ -11,6 +11,19 @@ class PointerType(BasicType):
     - const (bool): is it constant?
     """
 
+    templates = {
+        'retrieve_cstr_const': (
+            '{tab}{basetype_c_name} {argname} = MArgument_get{basetype_math_name}(Args{suffix}[{index}]);\n'
+        ),
+        'retrieve_cstr_no_const': (
+            '{tab}MTensor mtensor_{argname}{suffix} = MArgument_getMTensor(Args{suffix}[{index}]);\n'
+            '{tab}{basetype_c_name} {argname} = * (libData{suffix}->MTensor_get{basetype_math_name}Data(mtensor_{argname}{suffix}));\n'
+        ),
+        'before_mathstr_no_const': (
+            '{tab}{argname}{suffix} = Developer`ToPackedArray[{{{convert_f}[{argname}]}}];\n'
+        )
+    }
+
     def __init__(self, basetype, const=False):
         self.typename = basetype.typename + ' * '
         if const:
@@ -82,13 +95,16 @@ class PointerType(BasicType):
     def retrieve_cstr(self, argname, index, tab='', suffix=None):
         if suffix is None:
             suffix = self.default_suffix
-        if self.const:
-            form = '{tab}{self.basetype.c_name} {argname} = MArgument_get{self.basetype.math_name}(Args{suffix}[{index}]);\n'
-        else:
-            form = ('{tab}MTensor mtensor_{argname}{suffix} = MArgument_getMTensor(Args{suffix}[{index}]);\n'
-                    '{tab}{self.basetype.c_name} {argname} = * (libData{suffix}->MTensor_get{self.basetype.math_name}Data(mtensor_{argname}{suffix}));\n')
 
-        cstr = form.format(argname=argname, self=self, tab=tab, index=index, suffix=suffix)
+        basetype_c_name = self.basetype.c_name
+        basetype_math_name = self.basetype.math_name
+
+        if self.const:
+            template_name = 'retrieve_cstr_const'
+        else:
+            template_name = 'retrieve_cstr_no_const'
+
+        cstr = self.templates[template_name].format(**locals())
 
         return cstr
 

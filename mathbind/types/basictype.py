@@ -17,6 +17,10 @@ class BasicType:
     default_suffix = 'Gen'
     default_value = '0'
 
+    templates = {
+        'before_mathstr': '{tab}{argname}{suffix} = {argname};\n'
+    }
+
     @property
     def should_return(self):
         """
@@ -81,7 +85,7 @@ class BasicType:
         - tab (str): string to add at the beginning of each line.
         - suffix (str): suffix to add after the variable, defaults to None
         '''
-        return '{tab}{argname}{suffix} = {argname};\n'.format(
+        return BasicType.templates['before_mathstr'].format(
             tab=tab, argname=argname, suffix=suffix
         )
 

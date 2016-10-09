@@ -79,40 +79,28 @@ class TestArrayType(unittest.TestCase):
 
     def test_before_cstr(self):
         int_t = ArrayType.from_str('int [3]')
-        s = (
-            ' /* Converting triple */\n'
-            ' int * triple = (int *) data_tripleGen;\n'
-            ' if(sizeof(mint) != sizeof(int)) {\n'
-            '     triple = malloc(sizeof(int) * 3);\n'
-            '     for(int iGen = 0; iGen < 3; ++iGen)\n'
-            '         triple[iGen] = data_tripleGen[iGen];\n'
-            ' }\n'
+        s = ArrayType.templates['before_cstr'].format(
+            basetype_c_name=int_t.basetype.c_name,
+            basetype_c_math_name=int_t.basetype.c_math_name,
+            argname='triple', suffix='Gen', tab=' ', size=int_t.size
         )
         self.assertEqual(int_t.before_cstr('triple', ' ', 'Gen'), s)
 
-        float_t = ArrayType.from_str('float [3]')
-        s = (
-            ' /* Converting triple */\n'
-            ' float * triple = (float *) data_tripleGen2;\n'
-            ' if(sizeof(mreal) != sizeof(float)) {\n'
-            '     triple = malloc(sizeof(float) * 3);\n'
-            '     for(int iGen2 = 0; iGen2 < 3; ++iGen2)\n'
-            '         triple[iGen2] = data_tripleGen[iGen2];\n'
-            ' }\n'
+        float_t = ArrayType.from_str('float [length]')
+        s = ArrayType.templates['before_cstr'].format(
+            basetype_c_name=float_t.basetype.c_name,
+            basetype_c_math_name=float_t.basetype.c_math_name,
+            argname='triple', suffix='Gen2', tab='  ', size='length'
         )
-        self.assertEqual(float_t.before_cstr('triple', ' ', 'Gen2'), s)
+        self.assertEqual(float_t.before_cstr('triple', '  ', 'Gen2'), s)
 
         long_t = ArrayType.from_str('long [length]')
-        s = (
-            ' /* Converting triple */\n'
-            ' long * triple = (long *) data_tripleGen;\n'
-            ' if(sizeof(mint) != sizeof(long)) {\n'
-            '     triple = malloc(sizeof(long) * length);\n'
-            '     for(int iGen = 0; iGen < length; ++iGen)\n'
-            '         triple[iGen] = data_tripleGen[iGen];\n'
-            ' }\n'
+        s = ArrayType.templates['before_cstr'].format(
+            basetype_c_name=long_t.basetype.c_name,
+            basetype_c_math_name=long_t.basetype.c_math_name,
+            argname='triple', suffix='Gen', tab='  ', size='length'
         )
-        self.assertEqual(long_t.before_cstr('triple', ' ', 'Gen'), s)
+        self.assertEqual(long_t.before_cstr('triple', '  ', 'Gen'), s)
 
     def test_after_cstr(self):
         int_t = ArrayType.from_str('int [3]')
@@ -147,17 +135,17 @@ class TestArrayType(unittest.TestCase):
             ' mreal * data_ironmanAnt = libDataAnt->MTensor_getRealData(mtensor_ironmanAnt);\n')
         self.assertEqual(double_t.retrieve_cstr('ironman', 2, ' ', 'Ant'), s + before)
 
-    def test_const_array_before_mathstr(self):
+    def test_before_mathstr(self):
         double_t = ArrayType.from_str('const double [3]')
-        s = (
-            ' varGen = If[Length[var] == 0, ConstantArray[0, 3], var];\n'
-            ' varGen = Developer`ToPackedArray[Map[N, varGen]];\n'
+        s = ArrayType.templates['before_mathstr'].format(
+            argname='var', suffix='Gen', tab=' ',
+            convert_f='N'
         )
         self.assertEqual(double_t.before_mathstr('var', ' ', 'Gen'), s)
 
         int_t = ArrayType.from_str('int [length]')
-        s = (
-            '   fooGeni = foo;\n'
-            '   fooGeni = Developer`ToPackedArray[Map[IntegerPart, fooGeni]];\n'
+        s = ArrayType.templates['before_mathstr'].format(
+            argname='foo', suffix='Geni', tab='   ',
+            convert_f='IntegerPart'
         )
         self.assertEqual(int_t.before_mathstr('foo', '   ', 'Geni'), s)

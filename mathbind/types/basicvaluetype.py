@@ -20,6 +20,9 @@ class BasicValueType(BasicType):
         'return_cstr': (
             '{tab}{c_name} return_value{suffix} = {func_call};\n'
             '{tab}MArgument_set{math_name}(Res{suffix}, return_value{suffix});\n'
+        ),
+        'before_mathstr': (
+            '{tab}{argname}{suffix} = {argname};\n'
         )
     }
 

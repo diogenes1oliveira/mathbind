@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import unittest
-from mathbind.types import PointerType, BasicValueType
+from mathbind.types import PointerType, BasicValueType, BasicType
 
 
 class TestPointerType(unittest.TestCase):
@@ -77,42 +77,77 @@ class TestPointerType(unittest.TestCase):
 
     def test_before_mathstr(self):
         double_t = PointerType.from_str('const double *')
-        self.assertEqual(double_t.before_mathstr('nada', '~~', 'Coisa'),
-                         '~~nadaCoisa = nada;\n')
+        s = BasicType.templates['before_mathstr'].format(
+            tab='   ', argname='myVar', suffix='Suf',
+            convert_f = double_t.basetype.math_convert_f
+        )
+        self.assertEqual(double_t.before_mathstr('myVar', '   ', 'Suf'), s)
 
         int_t = PointerType.from_str('const int *')
-        self.assertEqual(int_t.before_mathstr('namevariable', '~~', 'Suffix'),
-                         '~~namevariableSuffix = namevariable;\n')
+        s = BasicType.templates['before_mathstr'].format(
+            tab='\t', argname='myVar', suffix='MySuffix',
+            convert_f = int_t.basetype.math_convert_f
+        )
+        self.assertEqual(int_t.before_mathstr('myVar', '\t', 'MySuffix'), s)
 
         float_t = PointerType.from_str('float *')
-        self.assertEqual(float_t.before_mathstr('myVar', '\t', 'MySuffix'),
-                         '\tmyVarMySuffix = Developer`ToPackedArray[{N[myVar]}];\n')
+        s = PointerType.templates['before_mathstr_no_const'].format(
+            tab='\t', argname='myVar', suffix='MySuffix',
+            convert_f = float_t.basetype.math_convert_f
+        )
+        self.assertEqual(float_t.before_mathstr('myVar', '\t', 'MySuffix'), s)
 
         int_t = PointerType.from_str('int *')
+        s = PointerType.templates['before_mathstr_no_const'].format(
+            tab='\t', argname='myVar', suffix='MySuffix',
+            convert_f=int_t.basetype.math_convert_f
+        )
         self.assertEqual(int_t.before_mathstr('myVar', '\t', 'MySuffix'),
-                         '\tmyVarMySuffix = Developer`ToPackedArray[{IntegerPart[myVar]}];\n')
+                         s)
 
     def test_retrieve_cstr(self):
         double_t = PointerType.from_str('const double *')
-        self.assertEqual(double_t.retrieve_cstr('num', 0, suffix=''), 'double num = MArgument_getReal(Args[0]);\n')
+        s = double_t.templates['retrieve_cstr_const'].format(
+            argname='num', index=0,suffix='suff', tab='',
+            basetype_c_name=double_t.basetype.c_name,
+            basetype_math_name=double_t.basetype.math_name
+        )
+        self.assertEqual(double_t.retrieve_cstr('num', 0, suffix='suff'), s)
 
-        double_t = PointerType.from_str('const double *')
-        self.assertEqual(double_t.retrieve_cstr('num', 0, suffix='Wan'),
-                         'double num = MArgument_getReal(ArgsWan[0]);\n')
+        s = double_t.templates['retrieve_cstr_const'].format(
+            argname='argWhatever', index=10,suffix='Wan', tab='',
+            basetype_c_name=double_t.basetype.c_name,
+            basetype_math_name=double_t.basetype.math_name
+        )
+        self.assertEqual(double_t.retrieve_cstr('argWhatever', 10, suffix='Wan'),
+                         s)
 
         const_bool_t = PointerType.from_str('const bool *')
-        self.assertEqual(const_bool_t.retrieve_cstr('num', 10, suffix=''),
-                         'int num = MArgument_getBoolean(Args[10]);\n')
+        s = const_bool_t.templates['retrieve_cstr_const'].format(
+            argname='arg', index=10,suffix='Wan', tab='',
+            basetype_c_name=const_bool_t.basetype.c_name,
+            basetype_math_name=const_bool_t.basetype.math_name
+        )
+        self.assertEqual(const_bool_t.retrieve_cstr('arg', 10, suffix='Wan'),
+                         s)
 
         int_t = PointerType.from_str('int *')
-        self.assertEqual(int_t.retrieve_cstr('num', 10, suffix='Vis'),
-                         'MTensor mtensor_numVis = MArgument_getMTensor(ArgsVis[10]);\n' +
-                         'int num = * (libDataVis->MTensor_getIntegerData(mtensor_numVis));\n')
+        s = int_t.templates['retrieve_cstr_no_const'].format(
+            argname='arg2', index=2,suffix='Vis', tab='',
+            basetype_c_name=int_t.basetype.c_name,
+            basetype_math_name=int_t.basetype.math_name
+        )
+        self.assertEqual(int_t.retrieve_cstr('arg2', 2, suffix='Vis'),
+                         s)
 
         bool_t = PointerType.from_str('bool *')
-        self.assertEqual(bool_t.retrieve_cstr('flag', 10, suffix='Fal'),
-                         'MTensor mtensor_flagFal = MArgument_getMTensor(ArgsFal[10]);\n' +
-                         'int flag = * (libDataFal->MTensor_getBooleanData(mtensor_flagFal));\n')
+        s = bool_t.templates['retrieve_cstr_no_const'].format(
+            argname='flag', index=200,suffix='Fal', tab='',
+            basetype_c_name=bool_t.basetype.c_name,
+            basetype_math_name=bool_t.basetype.math_name
+        )
+        self.assertEqual(bool_t.retrieve_cstr('flag', 200, suffix='Fal'),
+                         s)
 
     def test_pass_cstr(self):
         const_long_t = PointerType.from_str('const long *')
