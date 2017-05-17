@@ -1,0 +1,3 @@
+Story 1:
+
+The user provides a C file with the library description and gets a dictionary describing the types of the functions to be used in the library.
